@@ -16,7 +16,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="24dp"
-        android:paddingBottom="0dp">
+        android:paddingBottom="70dp">
 
         <!-- Header -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -67,8 +67,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/banner_nano_machine"
-                />
+                android:src="@drawable/banner_nano_machine" />
+
+            <View
+                android:id="@+id/overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/gradient_overlay" />
 
             <TextView
                 android:id="@+id/bannerTitle"

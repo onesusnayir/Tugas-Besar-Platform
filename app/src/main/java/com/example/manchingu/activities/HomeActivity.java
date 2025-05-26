@@ -1,5 +1,6 @@
 package com.example.manchingu.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -59,6 +60,12 @@ public class HomeActivity extends AppCompatActivity {
         rvRekomendasi.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new AllComicAdapter(this, comicList, comic -> {
             // TODO: Intent ke detail activity jika ingin
+            Intent intent = new Intent(HomeActivity.this, ComicDetailActivity.class);
+            intent.putExtra("title", comic.getName());
+            intent.putExtra("author", comic.getAuthor());
+            intent.putExtra("poster", comic.getPoster()); // URL atau drawable name
+            intent.putExtra("synopsis", comic.getSynopsis()); // jika ada
+            startActivity(intent);
         });
         rvRekomendasi.setAdapter(adapter);
 

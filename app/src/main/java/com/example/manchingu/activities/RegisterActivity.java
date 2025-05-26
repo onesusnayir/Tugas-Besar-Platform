@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!username.equals(confirmPassword)){
+        if (!(password.equals(confirmPassword))){
             Toast.makeText(this, "Confirm password berbeda", Toast.LENGTH_SHORT).show();
         }
         User newUser = new User();
@@ -95,6 +95,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(RegisterActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();
                     Log.e("REGISTER_FAIL", "Code: " + response.code());
                 }
+                Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(login);
             }
 
             @Override

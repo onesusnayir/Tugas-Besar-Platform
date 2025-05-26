@@ -68,7 +68,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@drawable/banner_nano_machine"
-                android:background="@drawable/bg_banner_rounded"/>
+                />
 
             <TextView
                 android:id="@+id/bannerTitle"

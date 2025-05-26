@@ -49,7 +49,6 @@ public class AllComicAdapter extends RecyclerView.Adapter<AllComicAdapter.ComicV
 
         Glide.with(context)
                 .load(comic.getPoster())
-                .placeholder(R.drawable.bg_banner_rounded)
                 .into(holder.ivPoster);
 
         holder.itemView.setOnClickListener(v -> {

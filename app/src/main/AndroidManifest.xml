@@ -15,7 +15,13 @@
         android:theme="@style/Theme.ManChingu"
         tools:targetApi="31">
         <activity
+            android:name=".activities.AllComicsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ComicDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.BookmarkActivity"
             android:exported="false" />
         <activity
             android:name=".activities.HomeActivity"

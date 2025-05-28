@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("username", res.getData().getUsername());
+                    editor.putString("token", res.getToken());
                     editor.apply();
 
                     Intent home = new Intent(LoginActivity.this, HomeActivity.class);

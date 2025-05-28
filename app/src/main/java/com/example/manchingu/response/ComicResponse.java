@@ -32,7 +32,6 @@ public class ComicResponse {
     public static class Data {
         private List<Item> items;
         private int totalCount;
-
         public Data() {}
 
         public Data(List<Item> items, int totalCount) {

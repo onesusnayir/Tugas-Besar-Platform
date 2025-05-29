@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -68,6 +69,9 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         tvTitle.setText(title);
         tvAuthor.setText(author);
         tvDescription.setText(description);
+        Window window = getWindow();
+        window.setNavigationBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // samakan dengan warna BottomNavigationView
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // jika ingin atas juga sama
 
         // Tampilkan gambar dengan Glide
         Glide.with(this)
@@ -81,12 +85,26 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         apiService = ApiClient.getApiService(this);
 
         bookmarkBtn = findViewById(R.id.bookmark_btn);
-//        bookmarkBtn.setOnClickListener(this);
+        bookmarkBtn.setOnClickListener(this);
 
-//        getBookmarkList();
+        getBookmarkList();
     }
 
-//    Note: Button add Bookmark & Delete Bookmark Masih Error
+    @Override
+    public void onClick(View v) {
+        String idComic = getIntent().getStringExtra("id_comic");
+
+        if(isExsist){
+            deleteBookmark();
+            bookmarkBtn.setText("Add Bookmark");
+            isExsist = !isExsist;
+        }else{
+            insertBookmark(idComic);
+            bookmarkBtn.setText("Delete Bookmark");
+            isExsist = !isExsist;
+        }
+    }
+
     private void getBookmarkList() {
         apiService.getAllMyBookmark("Bearer "+token)
             .enqueue(new Callback<BookmarkResponse>() {
@@ -118,34 +136,22 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         );
     }
 
-    @Override
-    public void onClick(View v) {
-        String idComic = getIntent().getStringExtra("id_comic");
-
-        if(isExsist){
-            deleteBookmark();
-            bookmarkBtn.setText("Add Bookmark");
-        }else{
-            insertBookmark(idComic);
-            bookmarkBtn.setText("Delete Bookmark");
-        }
-    }
 
     private void insertBookmark(String idComic) {
         apiService.insertNewBookmark("Bearer "+token, idComic,"COMPLETED")
-                .enqueue(new Callback<Void>(){
+                .enqueue(new Callback<JsonObject>(){
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            Void res = response.body();
+                            String message = response.body().get("message").getAsString();
 
-                            Toast.makeText(ComicDetailActivity.this, "Bookmark Inserted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
 
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
                     }
                 });
     }

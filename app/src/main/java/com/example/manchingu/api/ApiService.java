@@ -42,7 +42,7 @@ public interface ApiService {
     );
 
     @POST("/bookmark/new/{comickId}")
-    Call<Void> insertNewBookmark(
+    Call<JsonObject> insertNewBookmark(
             @Header("Authorization") String token,
             @Path("comickId") String comickId,
             @Query("status") String status

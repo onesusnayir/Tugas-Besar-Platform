@@ -68,9 +68,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(HomeActivity.this, ComicDetailActivity.class);
             intent.putExtra("title", comic.getName());
             intent.putExtra("author", comic.getAuthor());
+            intent.putExtra("artist", comic.getArtist());
             intent.putExtra("poster", comic.getPoster()); // URL atau drawable name
             intent.putExtra("synopsis", comic.getSynopsis()); // jika ada
             intent.putExtra("id_comic", comic.getId_comic());
+            intent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));
             startActivity(intent);
         });
         rvRekomendasi.setAdapter(adapter);

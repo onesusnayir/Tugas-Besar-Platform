@@ -1,7 +1,9 @@
 package com.example.manchingu.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -18,9 +20,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.manchingu.R;
+import com.example.manchingu.adapter.GenreAdapter;
 import com.example.manchingu.api.ApiClient;
 import com.example.manchingu.api.ApiService;
 import com.example.manchingu.response.BookmarkResponse;
@@ -41,6 +46,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
     private boolean isExsist = false;
     private String BookmarkId;
+    ImageView backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +62,34 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         // Ambil data dari Intent
         String title = getIntent().getStringExtra("title");
         String author = getIntent().getStringExtra("author");
+        String artist = getIntent().getStringExtra("artist");
         String description = getIntent().getStringExtra("synopsis");
         String posterUrl = getIntent().getStringExtra("poster");
+//        ArrayList genre = getIntent().getIntegerArrayListExtra("genre");
+
+        // Genre
+        ArrayList<String> genre = getIntent().getStringArrayListExtra("genre");
+        RecyclerView rvGenre = findViewById(R.id.rvGenre);
+        rvGenre.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        if (genre != null) {
+            GenreAdapter genreAdapter = new GenreAdapter(genre);
+            rvGenre.setAdapter(genreAdapter);
+        }
 
         // Temukan view-nya
         TextView tvTitle = findViewById(R.id.tvTitle);
         TextView tvAuthor = findViewById(R.id.tvAuthor);
         TextView tvDescription = findViewById(R.id.tvSynopsis);
         ImageView ivPoster = findViewById(R.id.ivPoster);
+        TextView tvArtist = findViewById(R.id.tvArtist);
 
         // Set data ke view
         tvTitle.setText(title);
         tvAuthor.setText(author);
         tvDescription.setText(description);
+        tvArtist.setText(artist);
+
         Window window = getWindow();
         window.setNavigationBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // samakan dengan warna BottomNavigationView
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // jika ingin atas juga sama
@@ -87,24 +108,20 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         bookmarkBtn = findViewById(R.id.bookmark_btn);
         bookmarkBtn.setOnClickListener(this);
 
+        backBtn = findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(this);
+
         getBookmarkList();
     }
 
     @Override
     public void onClick(View v) {
-
-        showBookmarkDialog();
-//        String idComic = getIntent().getStringExtra("id_comic");
-//
-//        if(isExsist){
-//            deleteBookmark();
-//            bookmarkBtn.setText("Add Bookmark");
-//            isExsist = !isExsist;
-//        }else{
-//            insertBookmark(idComic);
-//            bookmarkBtn.setText("Delete Bookmark");
-//            isExsist = !isExsist;
-//        }
+        if (v.getId() == R.id.bookmark_btn) {
+            showBookmarkDialog();
+        } else if (v.getId() == R.id.back_btn) {
+            Intent intent = new Intent(ComicDetailActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void showBookmarkDialog() {
@@ -113,6 +130,9 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(
+                ContextCompat.getDrawable(this, R.color.background)
+        );
 
         AutoCompleteTextView dropdown = dialogView.findViewById(R.id.bookmark_dropdown);
         Button btnSave = dialogView.findViewById(R.id.btn_save);
@@ -157,6 +177,10 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                 bookmarkBtn.setText(selectedStatus);
                 isExsist = true;
             }
+
+//            if (selectedStatus.equalsIgnoreCase("Completed")){
+//                Log.d("Test", selectedStatus);
+//            }
 
             dialog.dismiss();
         });

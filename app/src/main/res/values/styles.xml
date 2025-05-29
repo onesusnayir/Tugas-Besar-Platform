@@ -5,4 +5,8 @@
         <item name="backgroundTint">@color/backgroundBtn</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="DropdownPopupBackground" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:popupBackground">@color/dark_blue</item> <!-- Ganti dengan warna yang kamu mau -->
+    </style>
 </resources>

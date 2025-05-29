@@ -99,6 +99,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         seeComicsBtn.setOnClickListener(this);
 
         bottomNav = findViewById(R.id.bottomNavigation);
+        bottomNav.setSelectedItemId(R.id.nav_home);
         bottomNav.setOnNavigationItemSelectedListener(this);
     }
 

@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -22,6 +24,7 @@ import com.example.manchingu.adapter.BookmarkAdapter;
 import com.example.manchingu.api.ApiClient;
 import com.example.manchingu.api.ApiService;
 import com.example.manchingu.response.BookmarkResponse;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BookmarkActivity extends AppCompatActivity implements View.OnClickListener {
+public class BookmarkActivity extends AppCompatActivity implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
     private RecyclerView rvBookmark;
     private SharedPreferences prefs;
     private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
@@ -38,6 +41,7 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
     private ApiService apiService;
     private String token;
     private TextView CompletedBtn, ReadingBtn, DroppedBtn, PlanToReadBtn;
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,10 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
         ReadingBtn.setOnClickListener(this);
         DroppedBtn.setOnClickListener(this);
         PlanToReadBtn.setOnClickListener(this);
+
+        bottomNav = findViewById(R.id.bottomNavigation);
+        bottomNav.setSelectedItemId(R.id.nav_bookmark);
+        bottomNav.setOnNavigationItemSelectedListener(this);
     }
 
     //    Metohod Recycler view
@@ -157,5 +165,14 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
             DroppedBtn.setBackground(null);
             ReadingBtn.setBackground(null);
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.nav_home){
+            Intent intent = new Intent(BookmarkActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
+        return false;
     }
 }

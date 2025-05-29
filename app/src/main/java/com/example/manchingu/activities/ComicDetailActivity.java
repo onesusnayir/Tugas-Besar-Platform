@@ -1,17 +1,18 @@
 package com.example.manchingu.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -23,7 +24,6 @@ import com.example.manchingu.R;
 import com.example.manchingu.api.ApiClient;
 import com.example.manchingu.api.ApiService;
 import com.example.manchingu.response.BookmarkResponse;
-import com.example.manchingu.response.UserResponse;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -92,18 +92,79 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v) {
-        String idComic = getIntent().getStringExtra("id_comic");
 
-        if(isExsist){
-            deleteBookmark();
-            bookmarkBtn.setText("Add Bookmark");
-            isExsist = !isExsist;
-        }else{
-            insertBookmark(idComic);
-            bookmarkBtn.setText("Delete Bookmark");
-            isExsist = !isExsist;
-        }
+        showBookmarkDialog();
+//        String idComic = getIntent().getStringExtra("id_comic");
+//
+//        if(isExsist){
+//            deleteBookmark();
+//            bookmarkBtn.setText("Add Bookmark");
+//            isExsist = !isExsist;
+//        }else{
+//            insertBookmark(idComic);
+//            bookmarkBtn.setText("Delete Bookmark");
+//            isExsist = !isExsist;
+//        }
     }
+
+    private void showBookmarkDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.bookmark_dialog, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        AutoCompleteTextView dropdown = dialogView.findViewById(R.id.bookmark_dropdown);
+        Button btnSave = dialogView.findViewById(R.id.btn_save);
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+
+        // Dropdown status
+        String[] statusOptions = {"READING", "COMPLETED", "PLAN_TO_READ", "DROPPED", "NONE"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                statusOptions
+        );
+        dropdown.setAdapter(adapter);
+
+        // Cancel
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        // Save bookmark
+        btnSave.setOnClickListener(v -> {
+            String selectedStatus = dropdown.getText().toString().trim();
+            String idComic = getIntent().getStringExtra("id_comic");
+
+            if (selectedStatus.isEmpty()) {
+                Toast.makeText(this, "Please select a status", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (selectedStatus.equalsIgnoreCase("None")) {
+                if (isExsist) {
+                    deleteBookmark();
+                    bookmarkBtn.setText("Add Bookmark");
+                    isExsist = false;
+                } else {
+                    Toast.makeText(this, "Bookmark belum ada", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (isExsist) {
+                    updateBookmark(BookmarkId, selectedStatus);
+                } else {
+                    insertBookmark(idComic, selectedStatus);
+                }
+                bookmarkBtn.setText(selectedStatus);
+                isExsist = true;
+            }
+
+            dialog.dismiss();
+        });
+
+
+        dialog.show();
+    }
+
 
     private void getBookmarkList() {
         apiService.getAllMyBookmark("Bearer "+token)
@@ -120,7 +181,8 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                              // cek apakah idComic cocok
                              if (comic.getId_comic().equals(idComic)) {
                                  isExsist = true;
-                                 bookmarkBtn.setText("Delete Bookmark");
+                                 String status = bookmark.getStatus();
+                                 bookmarkBtn.setText(status);
                                  BookmarkId = bookmark.getId_bookmark();
                                  break;
                              }
@@ -137,8 +199,8 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void insertBookmark(String idComic) {
-        apiService.insertNewBookmark("Bearer "+token, idComic,"COMPLETED")
+    private void insertBookmark(String idComic, String selectedStatus) {
+        apiService.insertNewBookmark("Bearer "+token, idComic,selectedStatus)
                 .enqueue(new Callback<JsonObject>(){
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -155,6 +217,24 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                     }
                 });
     }
+
+    private void updateBookmark(String bookmarkId, String selectedStatus) {
+        apiService.updateBookmark("Bearer " + token, BookmarkId, selectedStatus)
+                .enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String message = response.body().get("message").getAsString();
+                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                    }
+                });
+    }
+
 
     private void deleteBookmark() {
         apiService.deleteBookmark("Bearer "+token, BookmarkId)

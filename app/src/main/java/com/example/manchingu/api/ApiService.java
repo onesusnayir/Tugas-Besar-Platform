@@ -12,6 +12,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -53,4 +54,12 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Path("bookmarkId") String bookmarkId
     );
+
+    @PUT("bookmark/{bookmarkId}")
+    Call<JsonObject> updateBookmark(
+            @Header("Authorization") String token,
+            @Path("id") String bookmarkId,
+            @Query("status") String newStatus
+    );
+
 }

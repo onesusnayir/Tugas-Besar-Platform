@@ -197,6 +197,9 @@ public class SearchActivity extends AppCompatActivity
         detailIntent.putExtra("author", comic.getAuthor());
         detailIntent.putExtra("poster", comic.getPoster());
         detailIntent.putExtra("synopsis", comic.getSynopsis());
+        detailIntent.putExtra("artist", comic.getArtist());
+        detailIntent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));
+
 
         // Jika Anda perlu passing data lain (misalnya genre atau rating), tambahkan di sini
         // detailIntent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));

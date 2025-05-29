@@ -95,9 +95,11 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
                 Intent intent = new Intent(BookmarkActivity.this, ComicDetailActivity.class);
                 intent.putExtra("title", comic.getName());
                 intent.putExtra("author", comic.getAuthor());
+                intent.putExtra("artist", comic.getArtist());
                 intent.putExtra("poster", comic.getPoster());
                 intent.putExtra("synopsis", comic.getSynopsis());
                 intent.putExtra("id_comic", comic.getId_comic());
+                intent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));
                 startActivity(intent);
             }
         });

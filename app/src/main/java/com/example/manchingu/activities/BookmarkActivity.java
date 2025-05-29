@@ -173,6 +173,10 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
             Intent intent = new Intent(BookmarkActivity.this, HomeActivity.class);
             startActivity(intent);
         }
+        if (item.getItemId() == R.id.nav_search){
+            Intent intent = new Intent(BookmarkActivity.this, SearchActivity.class);
+            startActivity(intent);
+        }
         return false;
     }
 }

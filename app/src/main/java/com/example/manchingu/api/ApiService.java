@@ -32,6 +32,10 @@ public interface ApiService {
     @GET("/comic/all")
     Call<ComicResponse> getAllComics();
 
+    @GET("/comic/all")
+    Call<ComicResponse> getComicByTitle(
+            @Query("key") String key
+    );
     @GET("/bookmark/my")
     Call<BookmarkResponse> getMyBookmark(
             @Header("Authorization") String token,
@@ -58,7 +62,7 @@ public interface ApiService {
     @PUT("bookmark/{bookmarkId}")
     Call<JsonObject> updateBookmark(
             @Header("Authorization") String token,
-            @Path("id") String bookmarkId,
+            @Path("bookmarkId") String bookmarkId,
             @Query("status") String newStatus
     );
 

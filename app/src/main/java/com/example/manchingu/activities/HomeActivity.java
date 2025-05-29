@@ -117,6 +117,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(HomeActivity.this, BookmarkActivity.class);
             startActivity(intent);
         }
+        if (item.getItemId() == R.id.nav_search){
+            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+            startActivity(intent);
+        }
         return false;
     }
 }

@@ -53,6 +53,7 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
             intent.putExtra("author", comic.getAuthor());
             intent.putExtra("poster", comic.getPoster()); // URL atau drawable name
             intent.putExtra("synopsis", comic.getSynopsis()); // jika ada
+            intent.putExtra("id_comic", comic.getId_comic());
             startActivity(intent);
         });
         rvComics.setAdapter(adapter);

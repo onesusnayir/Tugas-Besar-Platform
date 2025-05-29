@@ -58,7 +58,7 @@ public interface ApiService {
     @PUT("bookmark/{bookmarkId}")
     Call<JsonObject> updateBookmark(
             @Header("Authorization") String token,
-            @Path("id") String bookmarkId,
+            @Path("bookmarkId") String bookmarkId,
             @Query("status") String newStatus
     );
 

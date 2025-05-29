@@ -149,7 +149,11 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                     Toast.makeText(this, "Bookmark belum ada", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                insertBookmark(idComic, selectedStatus);
+                if (isExsist) {
+                    updateBookmark(BookmarkId, selectedStatus);
+                } else {
+                    insertBookmark(idComic, selectedStatus);
+                }
                 bookmarkBtn.setText(selectedStatus);
                 isExsist = true;
             }
@@ -213,6 +217,24 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                     }
                 });
     }
+
+    private void updateBookmark(String bookmarkId, String selectedStatus) {
+        apiService.updateBookmark("Bearer " + token, BookmarkId, selectedStatus)
+                .enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String message = response.body().get("message").getAsString();
+                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                    }
+                });
+    }
+
 
     private void deleteBookmark() {
         apiService.deleteBookmark("Bearer "+token, BookmarkId)

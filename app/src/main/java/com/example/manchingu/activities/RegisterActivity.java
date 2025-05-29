@@ -42,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return insets;
         });
 
+        // Inisialisasi
         etUsername = findViewById(R.id.username);
         etEmail = findViewById(R.id.email);
         etPassword = findViewById(R.id.password);
@@ -51,26 +52,32 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         apiService = ApiClient.getApiService(this);
 
+        // OnClickListener
         submitBtn.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
+        // Register Button OnClick: Post ke API
         if (v.getId() == R.id.submit_btn){
             registerUser();
-        } else if (v.getId() == R.id.login_btn) {
+        }
+        // Login Button onClick: Intent Login Activity
+        else if (v.getId() == R.id.login_btn) {
             Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(login);
         }
     }
 
     private void registerUser() {
+        // Ambil input user
         String username = etUsername.getText().toString().trim();
         String email    = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
+        // Validasi
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show();
             return;
@@ -78,11 +85,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (!(password.equals(confirmPassword))){
             Toast.makeText(this, "Confirm password berbeda", Toast.LENGTH_SHORT).show();
         }
+
+        // Buat User baru untuk request
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setEmail(email);
         newUser.setPassword(password);
 
+        // Memanggil method ApiService.createUser()
         Call<UserResponse> call = apiService.createUser(newUser);
         call.enqueue(new Callback<UserResponse>(){
             @Override

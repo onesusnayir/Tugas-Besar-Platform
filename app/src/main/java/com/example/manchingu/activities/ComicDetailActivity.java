@@ -1,8 +1,15 @@
 package com.example.manchingu.activities;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +19,27 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.manchingu.R;
+import com.example.manchingu.api.ApiClient;
+import com.example.manchingu.api.ApiService;
+import com.example.manchingu.response.BookmarkResponse;
+import com.example.manchingu.response.UserResponse;
+import com.google.gson.JsonObject;
 
-public class ComicDetailActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ComicDetailActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button bookmarkBtn;
+    private ApiService apiService;
+    private String token;
+    private SharedPreferences prefs;
+    private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
+    private boolean isExsist = false;
+    private String BookmarkId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,5 +74,101 @@ public class ComicDetailActivity extends AppCompatActivity {
                 .load(posterUrl)
                 .into(ivPoster);
 
+        // Get Token dari SharedPrefereces
+        prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        token = prefs.getString("token","");
+
+        apiService = ApiClient.getApiService(this);
+
+        bookmarkBtn = findViewById(R.id.bookmark_btn);
+//        bookmarkBtn.setOnClickListener(this);
+
+//        getBookmarkList();
     }
+
+//    Note: Button add Bookmark & Delete Bookmark Masih Error
+    private void getBookmarkList() {
+        apiService.getAllMyBookmark("Bearer "+token)
+            .enqueue(new Callback<BookmarkResponse>() {
+                 @Override
+                 public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
+                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                         comicList.clear();
+                         String idComic = getIntent().getStringExtra("id_comic");
+                         for (BookmarkResponse.Data bookmark : response.body().getData()) {
+                             BookmarkResponse.Comic comic = bookmark.getComic();
+                             comicList.add(comic);
+
+                             // cek apakah idComic cocok
+                             if (comic.getId_comic().equals(idComic)) {
+                                 isExsist = true;
+                                 bookmarkBtn.setText("Delete Bookmark");
+                                 BookmarkId = bookmark.getId_bookmark();
+                                 break;
+                             }
+                         }
+                     }
+                 }
+
+                 @Override
+                 public void onFailure(Call<BookmarkResponse> call, Throwable t) {
+
+                 }
+            }
+        );
+    }
+
+    @Override
+    public void onClick(View v) {
+        String idComic = getIntent().getStringExtra("id_comic");
+
+        if(isExsist){
+            deleteBookmark();
+            bookmarkBtn.setText("Add Bookmark");
+        }else{
+            insertBookmark(idComic);
+            bookmarkBtn.setText("Delete Bookmark");
+        }
+    }
+
+    private void insertBookmark(String idComic) {
+        apiService.insertNewBookmark("Bearer "+token, idComic,"COMPLETED")
+                .enqueue(new Callback<Void>(){
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Void res = response.body();
+
+                            Toast.makeText(ComicDetailActivity.this, "Bookmark Inserted", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                    }
+                });
+    }
+
+    private void deleteBookmark() {
+        apiService.deleteBookmark("Bearer "+token, BookmarkId)
+                .enqueue(new Callback<JsonObject>(){
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            JsonObject res = response.body();
+
+                            Toast.makeText(ComicDetailActivity.this, res.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                    }
+                });
+
+    }
+
+
 }

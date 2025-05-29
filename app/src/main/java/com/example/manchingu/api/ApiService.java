@@ -4,12 +4,15 @@ import com.example.manchingu.model.User;
 import com.example.manchingu.response.BookmarkResponse;
 import com.example.manchingu.response.ComicResponse;
 import com.example.manchingu.response.UserResponse;
+import com.google.gson.JsonObject;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -20,12 +23,34 @@ public interface ApiService {
     Call<UserResponse> login(@Body User userRequest);
 
     @GET("/comic/all")
-    Call<ComicResponse> getLimitedComics( @Query("page") int page, @Query("limit") int limit);
+    Call<ComicResponse> getLimitedComics(
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
 
     @GET("/comic/all")
     Call<ComicResponse> getAllComics();
 
     @GET("/bookmark/my")
-    Call<BookmarkResponse> getAllMyBookmark(@Header("Authorization") String token);
+    Call<BookmarkResponse> getMyBookmark(
+            @Header("Authorization") String token,
+            @Query("status") String status
+    );
+    @GET("/bookmark/my")
+    Call<BookmarkResponse> getAllMyBookmark(
+            @Header("Authorization") String token
+    );
 
+    @POST("/bookmark/new/{comickId}")
+    Call<Void> insertNewBookmark(
+            @Header("Authorization") String token,
+            @Path("comickId") String comickId,
+            @Query("status") String status
+    );
+
+    @DELETE("/bookmark/{bookmarkId}")
+    Call<JsonObject> deleteBookmark(
+            @Header("Authorization") String token,
+            @Path("bookmarkId") String bookmarkId
+    );
 }

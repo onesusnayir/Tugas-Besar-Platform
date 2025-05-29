@@ -43,40 +43,54 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return insets;
         });
 
+        // Inisialisasi
         etEmail = findViewById(R.id.email);
         etPassword = findViewById(R.id.password);
 
         submitBtn = findViewById(R.id.submit_btn);
         registerBtn = findViewById(R.id.register_btn);
+
+        apiService = ApiClient.getApiService(this);
+
+        // OnClickListener
         submitBtn.setOnClickListener(this);
         registerBtn.setOnClickListener(this);
 
-        apiService = ApiClient.getApiService(this);
     }
 
     @Override
     public void onClick(View v) {
+        // Login Button OnClick: Post ke API
         if (v.getId() == R.id.submit_btn){
             loginUser();
-        }else if(v.getId() == R.id.register_btn){
+        }
+        // Register Button OnClick: Intent Register Activity
+        else if(v.getId() == R.id.register_btn){
             Intent register = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(register);
         }
     }
 
     private void loginUser() {
+        // Get Email and Password
         String email    = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
+        // Validasi
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // New user untuk request
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
 
+        // Memanggil method ApiService.login
         Call<UserResponse> call = apiService.login(user);
+
+        // Menjalankan request secara asynchronous
         call.enqueue(new Callback<UserResponse>(){
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -85,6 +99,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(LoginActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d("LOGIN_SUCCESS", "Token: " + res.getToken());
 
+                    // Simpan Token dan Username
                     SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("username", res.getData().getUsername());

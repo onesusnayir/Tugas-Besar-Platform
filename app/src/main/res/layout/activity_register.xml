@@ -143,10 +143,10 @@
     </LinearLayout>
 
     <Button
+        style="@style/Button"
         android:id="@+id/submit_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/light_blue"
         android:layout_marginVertical="15dp"
         android:text="Register"/>
 

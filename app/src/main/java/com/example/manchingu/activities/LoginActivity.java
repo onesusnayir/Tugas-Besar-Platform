@@ -59,8 +59,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // OnClickListener
         submitBtn.setOnClickListener(this);
         registerBtn.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -69,15 +67,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (v.getId() == R.id.submit_btn){
             progressBar.setVisibility(View.VISIBLE);
             submitBtn.setEnabled(false); // Nonaktifkan tombol
-
-            // Simulasi proses login selama 2 detik
-            new Handler().postDelayed(() -> {
-                progressBar.setVisibility(View.GONE);
-                submitBtn.setEnabled(true);
-
-                // Lakukan pengecekan login di sini
-                Toast.makeText(LoginActivity.this, "Login berhasil", Toast.LENGTH_SHORT).show();
-            }, 2000);
             loginUser();
         }
         // Register Button OnClick: Intent Register Activity
@@ -114,6 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     UserResponse res = response.body();
                     Toast.makeText(LoginActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d("LOGIN_SUCCESS", "Token: " + res.getToken());
+                    progressBar.setVisibility(View.GONE);
+                    submitBtn.setEnabled(true);
 
                     // Simpan Token dan Username
                     SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -122,9 +113,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.putString("token", res.getToken());
                     editor.apply();
 
-                    Intent home = new Intent(LoginActivity.this, HomeActivity.class);
+                    Intent home = new Intent(LoginActivity.this, DashboardActivity.class);
                     startActivity(home);
                 } else {
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(LoginActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();
                     Log.e("LOGIN_FAIL", "Code: " + response.code());
                 }
@@ -133,6 +125,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
                 Log.e("LOGIN_ERROR", t.getMessage(), t);
             }
         });

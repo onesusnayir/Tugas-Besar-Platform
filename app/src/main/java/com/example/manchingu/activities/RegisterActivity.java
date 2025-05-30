@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     Button submitBtn;
     TextView loginBtn;
     ApiService apiService;
-
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         etConfirmPassword = findViewById(R.id.confirm_password);
         submitBtn = findViewById(R.id.submit_btn);
         loginBtn = findViewById(R.id.login_btn);
+        progressBar = findViewById(R.id.progressBar);
 
         apiService = ApiClient.getApiService(this);
 
@@ -61,6 +63,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         // Register Button OnClick: Post ke API
         if (v.getId() == R.id.submit_btn){
+            progressBar.setVisibility(View.VISIBLE);
+            submitBtn.setEnabled(false);
             registerUser();
         }
         // Login Button onClick: Intent Login Activity
@@ -100,6 +104,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if (response.isSuccessful() && response.body() != null) {
                     UserResponse res = response.body();
                     Toast.makeText(RegisterActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    submitBtn.setEnabled(true);
                     Log.d("REGISTER_SUCCESS", "Token: " + res.getToken());
                 } else {
                     Toast.makeText(RegisterActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();

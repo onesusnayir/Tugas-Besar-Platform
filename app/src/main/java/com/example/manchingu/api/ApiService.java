@@ -17,25 +17,26 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+    // Auth
     @POST("/auth/register")
     Call<UserResponse> createUser(@Body User userRequest);
-
     @POST("/auth/login")
     Call<UserResponse> login(@Body User userRequest);
 
+    // Comic
     @GET("/comic/all")
     Call<ComicResponse> getLimitedComics(
             @Query("page") int page,
             @Query("limit") int limit
     );
-
     @GET("/comic/all")
     Call<ComicResponse> getAllComics();
-
     @GET("/comic/all")
     Call<ComicResponse> getComicByTitle(
             @Query("key") String key
     );
+
+    // Bookmark
     @GET("/bookmark/my")
     Call<BookmarkResponse> getMyBookmark(
             @Header("Authorization") String token,
@@ -45,20 +46,17 @@ public interface ApiService {
     Call<BookmarkResponse> getAllMyBookmark(
             @Header("Authorization") String token
     );
-
     @POST("/bookmark/new/{comickId}")
     Call<JsonObject> insertNewBookmark(
             @Header("Authorization") String token,
             @Path("comickId") String comickId,
             @Query("status") String status
     );
-
     @DELETE("/bookmark/{bookmarkId}")
     Call<JsonObject> deleteBookmark(
             @Header("Authorization") String token,
             @Path("bookmarkId") String bookmarkId
     );
-
     @PUT("bookmark/{bookmarkId}")
     Call<JsonObject> updateBookmark(
             @Header("Authorization") String token,
@@ -66,4 +64,11 @@ public interface ApiService {
             @Query("status") String newStatus
     );
 
+    // Review
+    @POST("/review/new/{comicId}")
+    Call<JsonObject> insertReview(
+            @Header("Authorization") String token,
+            @Path("comicId") String comickId,
+            @Body JsonObject reviewBody
+    );
 }

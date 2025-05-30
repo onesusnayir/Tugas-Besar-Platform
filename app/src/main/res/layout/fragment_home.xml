@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/fragment_home_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0A1A2F"
-    tools:context=".activities.HomeActivity">
+    tools:context=".fragments.HomeFragment">
 
     <!-- Main Content -->
     <LinearLayout
@@ -15,8 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="70dp">
+        android:paddingTop="24dp">
 
         <!-- Header -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +60,7 @@
             android:id="@+id/bannerViewPager"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-        android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -107,15 +106,5 @@
 
     </LinearLayout>
 
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#12213A"
-        app:itemIconTint="@color/bottom_nav_selector"
-        app:itemTextColor="@color/bottom_nav_selector"
-        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

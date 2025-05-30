@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast; // Import Toast
+import android.widget.ImageView; // Import ImageView (jika digunakan untuk profile)
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -38,10 +40,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // Implementasi listener untuk View.OnClickListener, BottomNavigationView dan BannerPagerAdapter
+// Kita juga perlu mengimplementasikan OnComicClickListener dari AllComicAdapter
+// agar bisa menangani klik item rekomendasi di dalam Activity ini.
 public class HomeActivity extends AppCompatActivity
         implements View.OnClickListener,
         BottomNavigationView.OnNavigationItemSelectedListener,
-        BannerPagerAdapter.OnComicClickListener { // Tambahkan implementasi listener untuk banner
+        BannerPagerAdapter.OnComicClickListener, // Listener untuk item banner
+        AllComicAdapter.OnComicClickListener { // Tambahkan listener untuk item rekomendasi dari AllComicAdapter
 
     SharedPreferences prefs;
     TextView tvUsername;
@@ -58,8 +63,9 @@ public class HomeActivity extends AppCompatActivity
     // --- Untuk RecyclerView Rekomendasi ---
     RecyclerView rvRekomendasi;
     AllComicAdapter adapter; // Adapter untuk rekomendasi
-    // Menggunakan satu list data untuk keduanya
-    List<ComicResponse.Item> comicList = new ArrayList<>();
+    // Menggunakan satu list data untuk keduanya (data yang diambil dari API)
+    List<ComicResponse.Item> fetchedComicItems = new ArrayList<>(); // Mengubah nama variabel agar lebih jelas
+
 
     ApiService apiService; // Deklarasi ApiService
 
@@ -89,7 +95,8 @@ public class HomeActivity extends AppCompatActivity
         seeComicsBtn.setOnClickListener(this); // Set listener klik untuk tombol Lihat Semua
 
         bottomNav = findViewById(R.id.bottomNavigation);
-        bottomNav.setSelectedItemId(R.id.nav_home); // Set item Home terpilih secara default
+        // Set item Home terpilih secara default, tunda sedikit agar UI rendering selesai
+        bottomNav.post(() -> bottomNav.setSelectedItemId(R.id.nav_home));
         bottomNav.setOnNavigationItemSelectedListener(this); // Set listener untuk Bottom Navigation
 
         // --- Inisialisasi API Service ---
@@ -102,25 +109,23 @@ public class HomeActivity extends AppCompatActivity
         bannerAdapter = new BannerPagerAdapter(this);
         bannerViewPager.setAdapter(bannerAdapter);
 
-        // Setup Auto-Scrolling Banner
+        // Setup Auto-Scrolling Banner Runnable (disederhanakan untuk infinite loop)
         sliderRunnable = new Runnable() {
             @Override
             public void run() {
-                int currentItem = bannerViewPager.getCurrentItem();
-                int nextItem = currentItem + 1;
-                // Loop kembali ke item pertama jika sudah di akhir
-                if (nextItem >= bannerAdapter.getItemCount()) {
-                    nextItem = 0;
-                }
-                // Pindah ke item selanjutnya dengan animasi smooth
-                bannerViewPager.setCurrentItem(nextItem, true);
+                // Cukup geser ke item selanjutnya. Adapter yang mengurus loop tak terbatas.
+                bannerViewPager.setCurrentItem(bannerViewPager.getCurrentItem() + 1, true);
 
                 // Jadwalkan runnable ini untuk dijalankan lagi setelah delay
+                // Tidak perlu cek getActualItemCount() di sini, cukup di onResume & onResponse
+                // PENTING: Selalu batalkan callback sebelumnya sebelum menjadwalkan yang baru
+                sliderHandler.removeCallbacks(this); // Batalkan runnable ini sendiri
                 sliderHandler.postDelayed(this, SLIDER_DELAY);
             }
         };
 
         // Hentikan auto-scroll saat user berinteraksi, lanjutkan saat berhenti
+        // Ini tetap diperlukan untuk mengontrol handler dan memberikan pengalaman yang baik
         bannerViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrollStateChanged(int state) {
@@ -130,8 +135,12 @@ public class HomeActivity extends AppCompatActivity
                     sliderHandler.removeCallbacks(sliderRunnable);
                 } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
                     // User berhenti menyeret atau animasi settle selesai, mulai lagi auto-scroll
-                    // Beri delay sebelum mulai lagi
-                    sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
+                    // Pastikan ada lebih dari 1 item sebelum memulai kembali
+                    if (bannerAdapter != null && bannerAdapter.getActualItemCount() > 1) {
+                        // Batalkan callback apa pun sebelum menjadwalkan
+                        sliderHandler.removeCallbacks(sliderRunnable);
+                        sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
+                    }
                 }
             }
         });
@@ -139,17 +148,15 @@ public class HomeActivity extends AppCompatActivity
 
         // --- Setup RecyclerView Rekomendasi ---
         rvRekomendasi = findViewById(R.id.rvRekomendasi); // Inisialisasi RecyclerView
-        // Inisialisasi adapter rekomendasi, pass 'this' karena activity mengimplement listenernya
-        adapter = new AllComicAdapter(this, comicList, comic -> {
-            // TODO: Intent ke detail activity jika ingin (Listener ini sudah ada di kode Anda)
-            // Logika di sini sama dengan onComicClick di bawah, jadi bisa dihapus duplikasinya
-            // atau pastikan hanya satu tempat yang menangani Intent ke Detail
-            // startActivity(createDetailIntent(comic)); // Panggil method bantu jika ingin
-        });
+        // Inisialisasi adapter rekomendasi dengan list data yang sama, pass listener
+        // Mengubah lambda agar memanggil method onComicClick yang diimplementasikan di activity
+        // This approach ensures both banner clicks and rekomendasi clicks are handled centrally
+        adapter = new AllComicAdapter(this, fetchedComicItems, this::onComicClick);
+
         rvRekomendasi.setLayoutManager(new GridLayoutManager(this, 2)); // Set LayoutManager untuk grid
         rvRekomendasi.setAdapter(adapter);
-        // Penting: Disable nested scrolling jika di dalam NestedScrollView untuk performa lebih baik
-        rvRekomendasi.setNestedScrollingEnabled(false);
+        // Tidak perlu setNestedScrollingEnabled(false) jika RecyclerView adalah elemen scrollable utama (dengan app:layout_behavior)
+        // rvRekomendasi.setNestedScrollingEnabled(false); // Hapus baris ini
 
 
         // --- Panggil API untuk mendapatkan data (digunakan untuk banner dan rekomendasi) ---
@@ -159,65 +166,89 @@ public class HomeActivity extends AppCompatActivity
     // Method untuk memanggil API
     private void fetchComicsData() {
         // TODO: Tampilkan loading indicator jika perlu
+        // showLoadingIndicator();
 
         // Panggil API getLimitedComics sesuai kebutuhan Anda (page 1, limit 10 seperti kode awal)
         apiService.getLimitedComics(1, 10).enqueue(new Callback<ComicResponse>() {
             @Override
             public void onResponse(@NonNull Call<ComicResponse> call, @NonNull Response<ComicResponse> response) {
                 // TODO: Sembunyikan loading indicator
+                // hideLoadingIndicator();
 
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     List<ComicResponse.Item> items = response.body().getData().getItems();
 
                     if (items != null && !items.isEmpty()) {
-                        // Update data di comicList yang digunakan oleh adapter rekomendasi
-                        comicList.clear();
-                        comicList.addAll(items);
+                        // Update data di list yang digunakan oleh adapter rekomendasi
+                        fetchedComicItems.clear();
+                        fetchedComicItems.addAll(items);
                         adapter.notifyDataSetChanged(); // Beri tahu adapter rekomendasi data berubah
 
                         // Update data di adapter banner dengan data yang sama
                         bannerAdapter.updateData(items);
 
-                        // Mulai auto-scroll hanya jika ada lebih dari 1 item
-                        if (items.size() > 1) {
-                            // Beri sedikit delay sebelum slide pertama dimulai
+                        // Jika ada lebih dari 1 item untuk carousel:
+                        if (bannerAdapter.getActualItemCount() > 1) {
+                            // Atur ViewPager2 ke posisi awal yang 'acak' di tengah Integer.MAX_VALUE
+                            // untuk memberikan efek loop tak terbatas yang mulus
+                            int initialPosition = Integer.MAX_VALUE / 2;
+                            // Sesuaikan posisi awal agar merupakan kelipatan dari jumlah item asli
+                            // Ini penting agar item yang ditampilkan di awal selalu item data pertama (index 0)
+                            initialPosition = initialPosition - (initialPosition % bannerAdapter.getActualItemCount());
+
+                            bannerViewPager.setCurrentItem(initialPosition, false); // Set posisi awal tanpa animasi
+
+                            // Batalkan callback apa pun sebelum menjadwalkan
+                            sliderHandler.removeCallbacks(sliderRunnable);
+                            // Beri sedikit delay sebelum slide otomatis pertama dimulai
                             sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
+
+                            // Pastikan banner terlihat
+                            bannerViewPager.setVisibility(View.VISIBLE);
+                        } else {
+                            // Jika 0 atau 1 item, hentikan auto-scroll dan sembunyikan banner
+                            sliderHandler.removeCallbacks(sliderRunnable);
+                            bannerViewPager.setVisibility(View.GONE);
                         }
 
                     } else {
                         // Handle jika list kosong tapi response sukses
                         Toast.makeText(HomeActivity.this, "Tidak ada data komik yang ditemukan.", Toast.LENGTH_SHORT).show();
                         // Kosongkan kedua adapter jika tidak ada data
-                        comicList.clear();
+                        fetchedComicItems.clear();
                         adapter.notifyDataSetChanged();
                         bannerAdapter.updateData(new ArrayList<>());
-                        // Hentikan auto-scroll jika tidak ada data
+                        // Hentikan auto-scroll dan sembunyikan banner
                         sliderHandler.removeCallbacks(sliderRunnable);
+                        bannerViewPager.setVisibility(View.GONE);
                     }
 
                 } else {
                     // Handle respon gagal (misalnya, status code 404, 500, dll.)
                     Toast.makeText(HomeActivity.this, "Gagal mendapatkan data: " + response.code(), Toast.LENGTH_SHORT).show();
                     // Kosongkan kedua adapter jika gagal
-                    comicList.clear();
+                    fetchedComicItems.clear();
                     adapter.notifyDataSetChanged();
                     bannerAdapter.updateData(new ArrayList<>());
-                    // Hentikan auto-scroll jika gagal
+                    // Hentikan auto-scroll dan sembunyikan banner
                     sliderHandler.removeCallbacks(sliderRunnable);
+                    bannerViewPager.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ComicResponse> call, @NonNull Throwable t) {
                 // TODO: Sembunyikan loading indicator
+                // hideLoadingIndicator();
                 Toast.makeText(HomeActivity.this, "Error koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 t.printStackTrace(); // Log error untuk debugging
                 // Kosongkan kedua adapter jika error
-                comicList.clear();
+                fetchedComicItems.clear();
                 adapter.notifyDataSetChanged();
                 bannerAdapter.updateData(new ArrayList<>());
-                // Hentikan auto-scroll jika error
+                // Hentikan auto-scroll dan sembunyikan banner
                 sliderHandler.removeCallbacks(sliderRunnable);
+                bannerViewPager.setVisibility(View.GONE);
             }
         });
     }
@@ -228,11 +259,12 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        // Mulai auto-scroll saat activity aktif, hanya jika ada data dan lebih dari 1 item
-        // Logika postDelayed awal dipindahkan ke onResponse setelah data dimuat.
-        // Tapi tetap perlu dipanggil di onResume jika activity di-pause lalu dilanjutkan,
-        // asalkan data sudah ada dan lebih dari 1 item.
-        if (bannerAdapter != null && bannerAdapter.getItemCount() > 1) {
+        // Mulai auto-scroll saat activity aktif, hanya jika ada data lebih dari 1 item
+        // dan ViewPager2 terlihat.
+        // Penjadwalan awal dilakukan di fetchComicsData. Ini untuk melanjutkan setelah Pause.
+        if (bannerAdapter != null && bannerAdapter.getActualItemCount() > 1 && bannerViewPager.getVisibility() == View.VISIBLE) {
+            // Batalkan callback apa pun sebelum menjadwalkan kembali
+            sliderHandler.removeCallbacks(sliderRunnable);
             // Jadwalkan runnable untuk dijalankan kembali setelah resume
             sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
         }
@@ -276,7 +308,8 @@ public class HomeActivity extends AppCompatActivity
         // Jika sudah di Home, tidak perlu pindah activity lagi
         if (itemId == R.id.nav_home) {
             // Optional: Scroll ke atas halaman jika di Home
-            // NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view_id_anda); // Ganti dengan ID NestedScrollView jika ada
+            // Jika Anda menggunakan NestedScrollView di XML, ID-nya harus sesuai
+            // NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view_id_anda);
             // if (nestedScrollView != null) {
             //    nestedScrollView.scrollTo(0, 0);
             // }
@@ -300,7 +333,7 @@ public class HomeActivity extends AppCompatActivity
     // Metode ini akan dipanggil ketika item di banner carousel diklik
     @Override
     public void onComicClick(ComicResponse.Item comic) {
-        // Logika navigasi ke detail komik ketika item banner diklik
+        // Logika navigasi ke detail komik ketika item banner ATAU item rekomendasi diklik
         startActivity(createDetailIntent(comic)); // Gunakan method bantu untuk Intent
     }
 
@@ -329,4 +362,8 @@ public class HomeActivity extends AppCompatActivity
 
         return detailIntent;
     }
+
+    // TODO: Implementasikan metode untuk menampilkan/menyembunyikan loading indicator jika Anda punya UI-nya
+    // private void showLoadingIndicator() { ... }
+    // private void hideLoadingIndicator() { ... }
 }

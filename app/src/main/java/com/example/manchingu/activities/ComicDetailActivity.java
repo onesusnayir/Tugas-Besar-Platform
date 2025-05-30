@@ -52,7 +52,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     private String idComic;
     private SharedPreferences prefs;
     private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
-    private List<ProfileResponse.Data> userList = new ArrayList<>();
     private List<ReviewResponse.ReviewData> reviewList = new ArrayList<>();
     private boolean isExsist = false;
     private String BookmarkId;
@@ -111,7 +110,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
 
         // Adapter review
         adapter = new ReviewAdapter(reviewList,
-//                userList,
                 this);
         rvReview = findViewById(R.id.rvReview);
         rvReview.setLayoutManager(new LinearLayoutManager(this));
@@ -145,7 +143,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         getBookmarkList();
 
         getReviewComics();
-//        getReviewUser();
     }
 
     @Override
@@ -200,27 +197,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         );
     }
 
-    private void getReviewUser() {
-        apiService.getComicReviews("Bearer "+token, idComic)
-                .enqueue(new Callback<ReviewResponse>() {
-                             @Override
-                             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                                 if (response.isSuccessful() && response.body() != null && response.body() != null) {
-                                     List<ReviewResponse.ReviewData> items = response.body().getData();
-
-                                     reviewList.clear();
-                                     reviewList.addAll(items);
-                                     adapter.notifyDataSetChanged();
-                                 }
-                             }
-
-                             @Override
-                             public void onFailure(Call<ReviewResponse> call, Throwable t) {
-
-                             }
-                         }
-                );
-    }
 
 
     private void postNewReview(JsonObject reviewBody) {

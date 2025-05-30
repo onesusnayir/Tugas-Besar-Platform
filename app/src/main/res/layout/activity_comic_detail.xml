@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:id="@+id/main">
 
+    <!-- Header (Back button and Title) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,6 +30,7 @@
 
     </LinearLayout>
 
+    <!-- Main content in ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -37,13 +39,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- Poster and Title Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -94,6 +97,7 @@
 
             </LinearLayout>
 
+            <!-- Bookmark Button -->
             <Button
                 android:id="@+id/bookmark_btn"
                 android:layout_width="match_parent"
@@ -103,6 +107,7 @@
                 app:backgroundTint="@color/backgroundBtn"
                 android:text="Add to Bookmark"/>
 
+            <!-- Synopsis -->
             <TextView
                 android:id="@+id/tvSynopsis"
                 android:layout_width="match_parent"
@@ -114,6 +119,7 @@
                 android:gravity="start"
                 android:lineSpacingExtra="4dp"/>
 
+            <!-- Author Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,6 +156,7 @@
 
             </LinearLayout>
 
+            <!-- Artist Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -186,6 +193,7 @@
 
             </LinearLayout>
 
+            <!-- Genre Section (RecyclerView) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -209,11 +217,39 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvGenre"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="wrap_content"/> <!-- Changed to wrap_content for better nesting behavior -->
 
                 </LinearLayout>
 
             </LinearLayout>
+
+            <!-- "Beri ulasan manhwa ini" section -->
+            <include layout="@layout/layout_write_review" />
+
+            <!-- "Rating dan ulasan" section - NOW A RecyclerView -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rating dan ulasan"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="start"
+                    android:textStyle="bold"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

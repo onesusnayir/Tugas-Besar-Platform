@@ -74,7 +74,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:text="Rekomendasi"
+                android:text="Comics"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
             <Button
@@ -89,7 +89,8 @@
                 android:paddingVertical="0dp"
                 android:background="@drawable/rounded"
                 app:backgroundTint="@color/light_blue"
-                android:text="Lihat semua" />
+                android:text="Lihat semua"
+                android:textColor="@color/white"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- Label Rekomendasi -->
 

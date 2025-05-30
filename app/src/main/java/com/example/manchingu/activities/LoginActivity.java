@@ -3,10 +3,12 @@ package com.example.manchingu.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button submitBtn;
     ApiService apiService;
     TextView registerBtn;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         submitBtn = findViewById(R.id.submit_btn);
         registerBtn = findViewById(R.id.register_btn);
+        progressBar = findViewById(R.id.progressBar);
 
         apiService = ApiClient.getApiService(this);
 
@@ -56,12 +60,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         submitBtn.setOnClickListener(this);
         registerBtn.setOnClickListener(this);
 
+
     }
 
     @Override
     public void onClick(View v) {
         // Login Button OnClick: Post ke API
         if (v.getId() == R.id.submit_btn){
+            progressBar.setVisibility(View.VISIBLE);
+            submitBtn.setEnabled(false); // Nonaktifkan tombol
+
+            // Simulasi proses login selama 2 detik
+            new Handler().postDelayed(() -> {
+                progressBar.setVisibility(View.GONE);
+                submitBtn.setEnabled(true);
+
+                // Lakukan pengecekan login di sini
+                Toast.makeText(LoginActivity.this, "Login berhasil", Toast.LENGTH_SHORT).show();
+            }, 2000);
             loginUser();
         }
         // Register Button OnClick: Intent Register Activity

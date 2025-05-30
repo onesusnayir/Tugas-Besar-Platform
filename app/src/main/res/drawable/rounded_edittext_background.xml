@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/white"/> <!-- Ganti dengan warna latar belakang yang Anda inginkan -->
+    <corners android:radius="16dp"/> <!-- Sesuaikan nilai radius untuk kebulatan yang diinginkan -->
+</shape>

@@ -8,9 +8,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.Button; // Button masih diperlukan jika ada button lain, tapi buttonFilter tidak
 import android.widget.EditText;
-import android.widget.PopupMenu;
+import android.widget.PopupMenu; // PopupMenu masih diperlukan jika showFilterMenu dipertahankan untuk filter yang lain
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +45,7 @@ public class SearchActivity extends AppCompatActivity
 
     private BottomNavigationView bottomNavigationView;
     private EditText editTextSearch;
-    private Button buttonFilter;
+    // private Button buttonFilter; // Dihapus
     private RecyclerView rvSearch;
     private SearchAdapter searchAdapter;
     private ApiService apiService;
@@ -65,7 +65,7 @@ public class SearchActivity extends AppCompatActivity
         // --- Inisialisasi Views ---
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         editTextSearch = findViewById(R.id.editTextSearch);
-        buttonFilter = findViewById(R.id.buttonFilter);
+        // buttonFilter = findViewById(R.id.buttonFilter); // Dihapus
         rvSearch = findViewById(R.id.rvSearch);
 
         // --- Inisialisasi RecyclerView ---
@@ -98,7 +98,7 @@ public class SearchActivity extends AppCompatActivity
         });
 
         // --- Set OnClickListener untuk Filter Button ---
-        buttonFilter.setOnClickListener(v -> showFilterMenu(v));
+        // buttonFilter.setOnClickListener(v -> showFilterMenu(v)); // Dihapus
     }
 
     // --- Method untuk Melakukan Pencarian API ---
@@ -151,30 +151,7 @@ public class SearchActivity extends AppCompatActivity
         });
     }
 
-    // Method untuk menampilkan PopupMenu filter (sama)
-    private void showFilterMenu(View v) {
-        PopupMenu popup = new PopupMenu(this, v);
-        // Inflate menu filter dari resource Anda (pastikan file filter_menu.xml ada)
-        popup.getMenuInflater().inflate(R.menu.filter_menu, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            // TODO: Implementasikan logika filtering/sorting di sini
-            if (itemId == R.id.filter_option_all) {
-                Toast.makeText(SearchActivity.this, "Filter: Semua (Implementasi logika filter)", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.filter_option_date) {
-                Toast.makeText(SearchActivity.this, "Filter: Tanggal Terbaru (Implementasi logika filter)", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.filter_option_category) {
-                Toast.makeText(SearchActivity.this, "Filter: Kategori (Implementasi logika filter)", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            return false;
-        });
-
-        popup.show();
-    }
 
     // Helper method untuk menyembunyikan keyboard (sama)
     private void hideKeyboard(View view) {

@@ -28,6 +28,7 @@ import com.example.manchingu.R;
 import com.example.manchingu.adapter.GenreAdapter;
 import com.example.manchingu.api.ApiClient;
 import com.example.manchingu.api.ApiService;
+import com.example.manchingu.fragments.HomeFragment;
 import com.example.manchingu.response.BookmarkResponse;
 import com.google.gson.JsonObject;
 
@@ -119,8 +120,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         if (v.getId() == R.id.bookmark_btn) {
             showBookmarkDialog();
         } else if (v.getId() == R.id.back_btn) {
-            Intent intent = new Intent(ComicDetailActivity.this, HomeActivity.class);
-            startActivity(intent);
+            finish();
         }
     }
 

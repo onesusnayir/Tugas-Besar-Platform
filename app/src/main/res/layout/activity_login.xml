@@ -63,13 +63,27 @@
             android:textColor="@color/white"/>
     </LinearLayout>
 
-    <Button
-        style="@style/Button"
-        android:id="@+id/submit_btn"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="15dp"
-        android:text="Login"/>
+        android:layout_height="wrap_content">
+        <Button
+            style="@style/Button"
+            android:id="@+id/submit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="15dp"
+            android:text="Login"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/white"
+            android:layout_marginLeft="50dp"/>
+    </FrameLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -88,4 +102,5 @@
             android:textColor="@color/light_blue"
             android:text=" Daftar!"/>
     </LinearLayout>
+
 </LinearLayout>

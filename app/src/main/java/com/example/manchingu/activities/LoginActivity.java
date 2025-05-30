@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.putString("token", res.getToken());
                     editor.apply();
 
-                    Intent home = new Intent(LoginActivity.this, HomeActivity.class);
+                    Intent home = new Intent(LoginActivity.this, DashboardActivity.class);
                     startActivity(home);
                 } else {
                     Toast.makeText(LoginActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();

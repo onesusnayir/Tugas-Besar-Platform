@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ public class AllComicAdapter extends RecyclerView.Adapter<AllComicAdapter.ComicV
     private Context context;
     private List<ComicResponse.Item> comicList;
     private OnComicClickListener listener;
+
 
     // Interface untuk klik item
     public interface OnComicClickListener {

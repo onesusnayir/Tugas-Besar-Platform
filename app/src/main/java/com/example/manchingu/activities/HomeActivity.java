@@ -8,6 +8,7 @@ import android.os.Looper; // Import Looper
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast; // Import Toast
 import android.widget.ImageView; // Import ImageView (jika digunakan untuk profile)
@@ -52,6 +53,7 @@ public class HomeActivity extends AppCompatActivity
     TextView tvUsername;
     Button seeComicsBtn;
     BottomNavigationView bottomNav;
+    ProgressBar progressBarBanner, progressBarComics;
 
     // --- Untuk Banner Carousel ---
     private ViewPager2 bannerViewPager; // Deklarasi ViewPager2
@@ -90,6 +92,10 @@ public class HomeActivity extends AppCompatActivity
         String username = prefs.getString("username", "defaultName");
         tvUsername = findViewById(R.id.username);
         tvUsername.setText(username);
+        progressBarBanner = findViewById(R.id.progressBarBanner);
+        progressBarComics = findViewById(R.id.progressBarComics);
+        progressBarBanner.setVisibility(View.VISIBLE);
+        progressBarComics.setVisibility(View.VISIBLE);
 
         seeComicsBtn = findViewById(R.id.see_all_btn);
         seeComicsBtn.setOnClickListener(this); // Set listener klik untuk tombol Lihat Semua
@@ -177,6 +183,8 @@ public class HomeActivity extends AppCompatActivity
 
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     List<ComicResponse.Item> items = response.body().getData().getItems();
+                    progressBarBanner.setVisibility(View.GONE);
+                    progressBarComics.setVisibility(View.GONE);
 
                     if (items != null && !items.isEmpty()) {
                         // Update data di list yang digunakan oleh adapter rekomendasi

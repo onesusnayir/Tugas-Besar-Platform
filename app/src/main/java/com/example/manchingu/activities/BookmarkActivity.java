@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -42,6 +43,7 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
     private String token;
     private TextView CompletedBtn, ReadingBtn, DroppedBtn, PlanToReadBtn;
     private BottomNavigationView bottomNav;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,9 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
         ReadingBtn = findViewById(R.id.reading_btn);
         DroppedBtn = findViewById(R.id.dropped_btn);
         PlanToReadBtn = findViewById(R.id.plan_to_read_btn);
+        progressBar = findViewById(R.id.progressBar);
+
+        progressBar.setVisibility(View.VISIBLE);
 
         ShowBookmarkRecyclerView();
 
@@ -114,6 +119,7 @@ public class BookmarkActivity extends AppCompatActivity implements View.OnClickL
                 public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                         comicList.clear();
+                        progressBar.setVisibility(View.GONE);
                         for (BookmarkResponse.Data bookmark : response.body().getData()) {
                             comicList.add(bookmark.getComic());
                         }

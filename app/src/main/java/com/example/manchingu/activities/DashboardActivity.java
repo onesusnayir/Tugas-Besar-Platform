@@ -29,7 +29,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationBa
         super.onCreate(savedInstanceState);
 
         // Aktifkan Edge-to-Edge jika diinginkan (sesuai template baru)
-        EdgeToEdge.enable(this); // Jika menggunakan fitur EdgeToEdge
+        EdgeToEdge.enable(this);
 
         setContentView(R.layout.activity_dashboard);
 
@@ -40,8 +40,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationBa
             return insets;
         });
 
+        // Bottom Navigation Bar
         bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnItemSelectedListener(this); // Set listener ke Activity ini
+        bottomNavigationView.setOnItemSelectedListener(this);
 
         // Muat fragment default saat pertama kali Activity dibuat (misal: HomeFragment)
         if (savedInstanceState == null) {

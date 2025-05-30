@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button; // Button masih diperlukan jika ada button lain, tapi buttonFilter tidak
 import android.widget.EditText;
 import android.widget.PopupMenu; // PopupMenu masih diperlukan jika showFilterMenu dipertahankan untuk filter yang lain
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class SearchActivity extends AppCompatActivity
     private RecyclerView rvSearch;
     private SearchAdapter searchAdapter;
     private ApiService apiService;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,9 @@ public class SearchActivity extends AppCompatActivity
         // Memberikan context (this) saat memanggil getApiService()
         apiService = ApiClient.getApiService(this);
 
+        // -- Inisialisasi Loading
+        progressBar = findViewById(R.id.progressBar);
+
         // --- Set Listener untuk Bottom Navigation ---
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
@@ -103,6 +108,7 @@ public class SearchActivity extends AppCompatActivity
 
     // --- Method untuk Melakukan Pencarian API ---
     private void performSearch() {
+        progressBar.setVisibility(View.VISIBLE);
         String query = editTextSearch.getText().toString().trim();
         if (query.isEmpty()) {
             Toast.makeText(this, "Masukkan judul komik untuk dicari", Toast.LENGTH_SHORT).show();
@@ -118,6 +124,7 @@ public class SearchActivity extends AppCompatActivity
                 // Sembunyikan indikator loading (opsional)
 
                 if (response.isSuccessful() && response.body() != null) {
+                    progressBar.setVisibility(View.GONE);
                     ComicResponse comicResponse = response.body();
 
                     ComicResponse.Data data = comicResponse.getData();
@@ -135,6 +142,7 @@ public class SearchActivity extends AppCompatActivity
                     }
 
                 } else {
+                    progressBar.setVisibility(View.GONE);
                     // Handle respon gagal (misalnya, status code 404, 500, dll.)
                     Toast.makeText(SearchActivity.this, "Gagal mendapatkan data: " + response.code(), Toast.LENGTH_SHORT).show();
                     searchAdapter.updateData(new ArrayList<>()); // Kosongkan RecyclerView
@@ -144,6 +152,7 @@ public class SearchActivity extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Call<ComicResponse> call, @NonNull Throwable t) {
                 // Sembunyikan indikator loading (opsional)
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(SearchActivity.this, "Error koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
                 searchAdapter.updateData(new ArrayList<>()); // Kosongkan RecyclerView

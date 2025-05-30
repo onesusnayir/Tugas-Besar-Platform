@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
     AllComicAdapter adapter;
     List<ComicResponse.Item> comicList = new ArrayList<>();
     ImageView backBtn;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
         });
         rvComics = findViewById(R.id.rv_comics);
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         adapter = new AllComicAdapter(this, comicList, comic -> {
             // TODO: Intent ke detail activity jika ingin
@@ -66,6 +70,7 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onResponse(Call<ComicResponse> call, Response<ComicResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    progressBar.setVisibility(View.GONE);
                     comicList.clear();
                     comicList.addAll(response.body().getData().getItems());
                     adapter.notifyDataSetChanged();

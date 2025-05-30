@@ -6,7 +6,7 @@
     android:id="@+id/fragment_bookmark_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.BookmarkActivity">
+    tools:context=".fragments.BookmarkFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,6 +70,20 @@
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Loading   -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/navbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="25dp"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBookmark"

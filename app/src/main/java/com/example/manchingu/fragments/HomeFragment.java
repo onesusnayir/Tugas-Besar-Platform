@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup; // Import ViewGroup
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast; // Import Toast
 import android.widget.ImageView; // Import ImageView
@@ -63,6 +64,9 @@ public class HomeFragment extends Fragment
     List<ComicResponse.Item> fetchedComicItems = new ArrayList<>();
 
     ApiService apiService;
+
+    // Loading
+    ProgressBar progressBarBanner, progressBarComics;
 
     // Konstruktor kosong diperlukan untuk Fragment
     public HomeFragment() {
@@ -145,6 +149,12 @@ public class HomeFragment extends Fragment
         rvRekomendasi.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvRekomendasi.setAdapter(adapter);
 
+        // --- Loading ---
+        progressBarBanner = view.findViewById(R.id.progressBarBanner);
+        progressBarComics = view.findViewById(R.id.progressBarComics);
+        progressBarBanner.setVisibility(View.VISIBLE);
+        progressBarBanner.setVisibility(View.VISIBLE);
+
         // --- Panggil API untuk mendapatkan data ---
         fetchComicsData(); // Panggil method untuk fetch data dari API
 
@@ -225,9 +235,11 @@ public class HomeFragment extends Fragment
                 }
 
                 // TODO: Sembunyikan loading indicator
-                // hideLoadingIndicator();
+                progressBarBanner.setVisibility(View.GONE);
+                progressBarComics.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+
                     List<ComicResponse.Item> items = response.body().getData().getItems();
 
                     if (items != null && !items.isEmpty()) {

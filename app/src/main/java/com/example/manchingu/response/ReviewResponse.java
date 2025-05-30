@@ -28,7 +28,7 @@ public class ReviewResponse {
         private String id_review;
         private String id_user;
         private String id_comic;
-        private double rating;
+        private int rating;
         private String review_text;
         private String created_at;
         private String updated_at;
@@ -64,7 +64,7 @@ public class ReviewResponse {
             return rating;
         }
 
-        public void setRating(double rating) {
+        public void setRating(int rating) {
             this.rating = rating;
         }
 

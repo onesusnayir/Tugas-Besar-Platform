@@ -11,6 +11,7 @@ import android.view.ViewGroup; // Import ViewGroup
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager; // Import InputMethodManager
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,9 @@ public class SearchFragment extends Fragment
     private SearchAdapter searchAdapter;
     private ApiService apiService;
 
+    // Loading
+    private ProgressBar progressBar;
+
     // Konstruktor kosong diperlukan
     public SearchFragment() {
         // Required empty public constructor
@@ -64,6 +68,9 @@ public class SearchFragment extends Fragment
         editTextSearch = view.findViewById(R.id.editTextSearch);
         // buttonFilter = view.findViewById(R.id.buttonFilter); // Dihapus
         rvSearch = view.findViewById(R.id.rvSearch);
+
+        // --- Inisialisasi Loading
+        progressBar = view.findViewById(R.id.progressBar);
 
         // --- Inisialisasi RecyclerView ---
         // Bersinggungan: Gunakan getContext() sebagai context untuk adapter
@@ -99,6 +106,7 @@ public class SearchFragment extends Fragment
         editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                progressBar.setVisibility(View.VISIBLE);
                 performSearch();
                 // Bersinggungan: Memanggil hideKeyboard dari Fragment
                 hideKeyboard(v);
@@ -142,6 +150,7 @@ public class SearchFragment extends Fragment
             @Override
             public void onResponse(@NonNull Call<ComicResponse> call, @NonNull Response<ComicResponse> response) {
                 // Sembunyikan indikator loading (opsional)
+                progressBar.setVisibility(View.GONE);
 
                 // Pastikan Fragment masih attached sebelum update UI
                 // Bersinggungan: Tambahkan isAdded() check sebelum mengakses context atau update UI

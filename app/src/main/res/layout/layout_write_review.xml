@@ -13,6 +13,14 @@
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="8dp"/>
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"
+        android:layout_gravity="center"
+        android:theme="@style/CustomRatingBar"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

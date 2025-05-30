@@ -8,4 +8,10 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
     <style name="Theme.ManChingu" parent="Base.Theme.ManChingu" />
+
+    <style name="CustomRatingBar" parent="Theme.MaterialComponents.Light">
+        <item name="colorControlActivated">@color/light_blue</item> <!-- Warna bintang terisi -->
+        <item name="colorControlNormal">@color/white</item>    <!-- Warna bintang kosong -->
+    </style>
+
 </resources>

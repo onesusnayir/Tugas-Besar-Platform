@@ -3,6 +3,7 @@ package com.example.manchingu.api;
 import com.example.manchingu.model.User;
 import com.example.manchingu.response.BookmarkResponse;
 import com.example.manchingu.response.ComicResponse;
+import com.example.manchingu.response.ReviewResponse;
 import com.example.manchingu.response.UserResponse;
 import com.google.gson.JsonObject;
 
@@ -71,4 +72,15 @@ public interface ApiService {
             @Path("comicId") String comickId,
             @Body JsonObject reviewBody
     );
+    @GET("/review/comic/{comicId}")
+    Call<ReviewResponse> getComicReviews(
+        @Header("Authorization") String token,
+        @Path("comicId") String comickId
+    );
+
+    // User
+//    @GET("/user/{userId}")
+//    Call<ReviewResponse> getUserReview(
+//        @Path("comicId") String comickId,
+//    );
 }

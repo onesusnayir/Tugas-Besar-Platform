@@ -9,7 +9,9 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +28,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.manchingu.R;
 import com.example.manchingu.adapter.GenreAdapter;
+import com.example.manchingu.adapter.ReviewAdapter;
 import com.example.manchingu.api.ApiClient;
 import com.example.manchingu.api.ApiService;
 import com.example.manchingu.fragments.HomeFragment;
 import com.example.manchingu.response.BookmarkResponse;
+import com.example.manchingu.response.ComicResponse;
+import com.example.manchingu.response.ProfileResponse;
+import com.example.manchingu.response.ReviewResponse;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -43,11 +49,18 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     private Button bookmarkBtn;
     private ApiService apiService;
     private String token;
+    private String idComic;
     private SharedPreferences prefs;
     private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
+    private List<ProfileResponse.Data> userList = new ArrayList<>();
+    private List<ReviewResponse.ReviewData> reviewList = new ArrayList<>();
     private boolean isExsist = false;
     private String BookmarkId;
-    ImageView backBtn;
+    private ImageView backBtn;
+    private EditText etUlasan;
+    private RatingBar ratingBar;
+    private ReviewAdapter adapter;
+    private RecyclerView rvReview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +79,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         String artist = getIntent().getStringExtra("artist");
         String description = getIntent().getStringExtra("synopsis");
         String posterUrl = getIntent().getStringExtra("poster");
+        idComic = getIntent().getStringExtra("id_comic");
 //        ArrayList genre = getIntent().getIntegerArrayListExtra("genre");
 
         // Genre
@@ -84,12 +98,25 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         TextView tvDescription = findViewById(R.id.tvSynopsis);
         ImageView ivPoster = findViewById(R.id.ivPoster);
         TextView tvArtist = findViewById(R.id.tvArtist);
+        
+        // Inisialisasi Edit Text & Rating Bar
+        etUlasan = findViewById(R.id.et_ulasan);
+        ratingBar = findViewById(R.id.ratingBar);
 
         // Set data ke view
         tvTitle.setText(title);
         tvAuthor.setText(author);
         tvDescription.setText(description);
         tvArtist.setText(artist);
+
+        // Adapter review
+        adapter = new ReviewAdapter(reviewList,
+//                userList,
+                this);
+        rvReview = findViewById(R.id.rvReview);
+        rvReview.setLayoutManager(new LinearLayoutManager(this));
+        rvReview.setAdapter(adapter);
+
 
         Window window = getWindow();
         window.setNavigationBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // samakan dengan warna BottomNavigationView
@@ -112,16 +139,109 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         backBtn = findViewById(R.id.back_btn);
         backBtn.setOnClickListener(this);
 
+        TextView tvPosting = findViewById(R.id.tv_posting);
+        tvPosting.setOnClickListener(this);
+
         getBookmarkList();
+
+        getReviewComics();
+//        getReviewUser();
     }
 
     @Override
     public void onClick(View v) {
+        // --- Bookmark Button ---
         if (v.getId() == R.id.bookmark_btn) {
             showBookmarkDialog();
-        } else if (v.getId() == R.id.back_btn) {
+        }
+        // --- Back Button ---
+        else if (v.getId() == R.id.back_btn) {
             finish();
         }
+        // --- Submit Review Button ---
+        else if (v.getId() == R.id.tv_posting) {
+            String reviewText = etUlasan.getText().toString().trim();
+            int rating = (int) ratingBar.getRating();
+
+            // Validasi
+            if (reviewText.isEmpty() || rating == 0) {
+                Toast.makeText(this, "Isi ulasan tidak boleh kosong!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // request JSON body
+            JsonObject reviewBody = new JsonObject();
+            reviewBody.addProperty("review_text", reviewText);
+            reviewBody.addProperty("rating", rating);
+
+            idComic = getIntent().getStringExtra("id_comic");
+            postNewReview(reviewBody);
+        }
+    }
+    private void getReviewComics() {
+        apiService.getComicReviews("Bearer "+token, idComic)
+            .enqueue(new Callback<ReviewResponse>() {
+                 @Override
+                 public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                     if (response.isSuccessful() && response.body() != null && response.body() != null) {
+                         List<ReviewResponse.ReviewData> items = response.body().getData();
+
+                         reviewList.clear();
+                         reviewList.addAll(items);
+                         adapter.notifyDataSetChanged();
+                     }
+                 }
+
+                 @Override
+                 public void onFailure(Call<ReviewResponse> call, Throwable t) {
+
+                 }
+            }
+        );
+    }
+
+    private void getReviewUser() {
+        apiService.getComicReviews("Bearer "+token, idComic)
+                .enqueue(new Callback<ReviewResponse>() {
+                             @Override
+                             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                                 if (response.isSuccessful() && response.body() != null && response.body() != null) {
+                                     List<ReviewResponse.ReviewData> items = response.body().getData();
+
+                                     reviewList.clear();
+                                     reviewList.addAll(items);
+                                     adapter.notifyDataSetChanged();
+                                 }
+                             }
+
+                             @Override
+                             public void onFailure(Call<ReviewResponse> call, Throwable t) {
+
+                             }
+                         }
+                );
+    }
+
+
+    private void postNewReview(JsonObject reviewBody) {
+        apiService.insertReview("Bearer "+token, idComic, reviewBody)
+            .enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body() != null) {
+                            JsonObject resBody = response.body();
+
+                            String message = resBody.get("message").getAsString();
+                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                    }
+            }
+        );
     }
 
     private void showBookmarkDialog() {
@@ -153,7 +273,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         // Save bookmark
         btnSave.setOnClickListener(v -> {
             String selectedStatus = dropdown.getText().toString().trim();
-            String idComic = getIntent().getStringExtra("id_comic");
 
             if (selectedStatus.isEmpty()) {
                 Toast.makeText(this, "Please select a status", Toast.LENGTH_SHORT).show();
@@ -172,7 +291,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                 if (isExsist) {
                     updateBookmark(BookmarkId, selectedStatus);
                 } else {
-                    insertBookmark(idComic, selectedStatus);
+                    insertBookmark(selectedStatus);
                 }
                 bookmarkBtn.setText(selectedStatus);
                 isExsist = true;
@@ -197,7 +316,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                  public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
                      if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                          comicList.clear();
-                         String idComic = getIntent().getStringExtra("id_comic");
                          for (BookmarkResponse.Data bookmark : response.body().getData()) {
                              BookmarkResponse.Comic comic = bookmark.getComic();
                              comicList.add(comic);
@@ -223,62 +341,62 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void insertBookmark(String idComic, String selectedStatus) {
+    private void insertBookmark(String selectedStatus) {
         apiService.insertNewBookmark("Bearer "+token, idComic,selectedStatus)
-                .enqueue(new Callback<JsonObject>(){
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            String message = response.body().get("message").getAsString();
+            .enqueue(new Callback<JsonObject>(){
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String message = response.body().get("message").getAsString();
 
-                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
 
-                        }
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                    }
-                });
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                }
+            }
+        );
     }
 
     private void updateBookmark(String bookmarkId, String selectedStatus) {
         apiService.updateBookmark("Bearer " + token, BookmarkId, selectedStatus)
-                .enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            String message = response.body().get("message").getAsString();
-                            Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
-                        }
+            .enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String message = response.body().get("message").getAsString();
+                        Toast.makeText(ComicDetailActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                    }
-                });
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                }
+            }
+        );
     }
 
 
     private void deleteBookmark() {
         apiService.deleteBookmark("Bearer "+token, BookmarkId)
-                .enqueue(new Callback<JsonObject>(){
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            JsonObject res = response.body();
+            .enqueue(new Callback<JsonObject>(){
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        JsonObject res = response.body();
 
-                            Toast.makeText(ComicDetailActivity.this, res.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ComicDetailActivity.this, res.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 
-                        }
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                    }
-                });
-
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                }
+            }
+        );
     }
-
-
 }

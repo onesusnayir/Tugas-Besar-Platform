@@ -29,7 +29,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activities.DashboardActivity" />
-        <activity android:name=".fragments.HomeFragment" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">

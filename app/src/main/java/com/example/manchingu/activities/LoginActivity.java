@@ -117,7 +117,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     startActivity(home);
                 } else {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(LoginActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();
+                    submitBtn.setEnabled(true);
+                    Toast.makeText(LoginActivity.this, "Gagal Login", Toast.LENGTH_SHORT).show();
                     Log.e("LOGIN_FAIL", "Code: " + response.code());
                 }
             }
@@ -126,6 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onFailure(Call<UserResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
+                submitBtn.setEnabled(true);
                 Log.e("LOGIN_ERROR", t.getMessage(), t);
             }
         });

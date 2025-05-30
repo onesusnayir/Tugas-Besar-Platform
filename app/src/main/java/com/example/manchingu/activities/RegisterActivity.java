@@ -108,6 +108,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     submitBtn.setEnabled(true);
                     Log.d("REGISTER_SUCCESS", "Token: " + res.getToken());
                 } else {
+                    progressBar.setVisibility(View.GONE);
+                    submitBtn.setEnabled(true);
                     Toast.makeText(RegisterActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();
                     Log.e("REGISTER_FAIL", "Code: " + response.code());
                 }
@@ -117,6 +119,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                submitBtn.setEnabled(true);
                 Toast.makeText(RegisterActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("REGISTER_ERROR", t.getMessage(), t);
             }

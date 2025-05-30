@@ -222,6 +222,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+            <!-- Post New Review           -->
 
             <!-- "Beri ulasan manhwa ini" section -->
             <include layout="@layout/layout_write_review" />
@@ -251,6 +252,16 @@
             </LinearLayout>
 
 
+            <!-- Get All Review           -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>

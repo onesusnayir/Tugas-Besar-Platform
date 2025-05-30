@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup; // Import ViewGroup
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat; // Import ContextCompat
@@ -45,7 +46,7 @@ public class BookmarkFragment extends Fragment
     private ApiService apiService;
     private String token;
     private TextView CompletedBtn, ReadingBtn, DroppedBtn, PlanToReadBtn;
-    private BottomNavigationView bottomNav;
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,6 +70,8 @@ public class BookmarkFragment extends Fragment
         // Memanggil fungsi ApiClient.getApiService()
         apiService = ApiClient.getApiService(getActivity());
 
+        progressBar = view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         GetBookmark("COMPLETED");
         CompletedBtn.setBackgroundResource(R.drawable.rounded);
         CompletedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -108,6 +111,7 @@ public class BookmarkFragment extends Fragment
                              @Override
                              public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
                                  if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                                     progressBar.setVisibility(View.GONE);
                                      comicList.clear();
                                      for (BookmarkResponse.Data bookmark : response.body().getData()) {
                                          comicList.add(bookmark.getComic());
@@ -118,6 +122,7 @@ public class BookmarkFragment extends Fragment
 
                              @Override
                              public void onFailure(Call<BookmarkResponse> call, Throwable t) {
+                                     progressBar.setVisibility(View.GONE);
 
                              }
                          }
@@ -127,6 +132,7 @@ public class BookmarkFragment extends Fragment
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.completed_btn){
+            progressBar.setVisibility(View.VISIBLE);
             GetBookmark("COMPLETED");
             CompletedBtn.setBackgroundResource(R.drawable.rounded);
             CompletedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -136,6 +142,7 @@ public class BookmarkFragment extends Fragment
             PlanToReadBtn.setBackground(null);
         }
         else if (v.getId() == R.id.dropped_btn) {
+            progressBar.setVisibility(View.VISIBLE);
             GetBookmark("DROPPED");
             DroppedBtn.setBackgroundResource(R.drawable.rounded);
             DroppedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -145,6 +152,7 @@ public class BookmarkFragment extends Fragment
             PlanToReadBtn.setBackground(null);
         }
         else if (v.getId() == R.id.reading_btn) {
+            progressBar.setVisibility(View.VISIBLE);
             GetBookmark("READING");
             ReadingBtn.setBackgroundResource(R.drawable.rounded);
             ReadingBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -154,6 +162,7 @@ public class BookmarkFragment extends Fragment
             PlanToReadBtn.setBackground(null);
         }
         else if (v.getId() == R.id.plan_to_read_btn) {
+            progressBar.setVisibility(View.VISIBLE);
             GetBookmark("PLAN_TO_READ");
             PlanToReadBtn.setBackgroundResource(R.drawable.rounded);
             PlanToReadBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -174,5 +183,6 @@ public class BookmarkFragment extends Fragment
         DroppedBtn = null;
         PlanToReadBtn = null;
         adapter = null;
+        progressBar = null;
     }
 }

@@ -56,11 +56,23 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Banner Komik Utama -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/bannerViewPager"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginBottom="20dp"/>
+            android:layout_height="wrap_content">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/bannerViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="20dp"/>
+            <ProgressBar
+                android:id="@+id/progressBarBanner"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/white"/>
+        </FrameLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -93,6 +105,15 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- Label Rekomendasi -->
 
+        <!-- Loading       -->
+        <ProgressBar
+            android:id="@+id/progressBarComics"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/white"/>
         <!-- Grid Rekomendasi Komik -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvRekomendasi"

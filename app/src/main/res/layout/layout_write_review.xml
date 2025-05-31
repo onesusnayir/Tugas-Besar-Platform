@@ -5,61 +5,79 @@
     android:orientation="vertical"
     android:paddingTop="16dp">
 
-    <TextView
+    <!-- If User not insert review yet   -->
+    <LinearLayout
+        android:id="@+id/post_user_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Beri ulasan manhwa ini"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="8dp"
-        />
-    <RatingBar
-        android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:numStars="5"
-        android:stepSize="1.0"
-        android:layout_gravity="center"
-        android:theme="@style/CustomRatingBar"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
-
-        <EditText
-            android:id="@+id/et_ulasan"
+        android:orientation="vertical">
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:minHeight="48dp"
-            android:hint="Tulis ulasan anda"
-            android:textColorHint="#80FFFFFF"
-            android:textColor="#FFFFFF"
-            android:padding="12dp"
-            android:background="@drawable/rounded"/>
-
-        <TextView
-            android:id="@+id/tv_posting"
+            android:text="Beri ulasan manhwa ini"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            />
+        <RatingBar
+            android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Posting"
-            android:textColor="@color/light_blue"
-            android:textStyle="bold"
-            android:layout_alignParentEnd="true"
-            android:layout_alignBottom="@id/et_ulasan"
-            android:padding="14dp"/>
-    </RelativeLayout>
+            android:layout_marginTop="5dp"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:layout_gravity="center"
+            android:theme="@style/CustomRatingBar"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/et_ulasan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="48dp"
+                android:hint="Tulis ulasan anda"
+                android:textColorHint="#80FFFFFF"
+                android:textColor="#FFFFFF"
+                android:padding="12dp"
+                android:background="@drawable/rounded"/>
+
+            <TextView
+                android:id="@+id/tv_posting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Posting"
+                android:textColor="@color/light_blue"
+                android:textStyle="bold"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/et_ulasan"
+                android:padding="14dp"/>
+            <TextView
+                android:id="@+id/tv_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textColor="@color/light_blue"
+                android:textStyle="bold"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/et_ulasan"
+                android:visibility="gone"
+                android:padding="14dp"/>
+        </RelativeLayout>
+    </LinearLayout>
 
     <!-- If User Already Input Review   -->
     <!-- Users Reveiw   -->
     <LinearLayout
+        android:id="@+id/get_user_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,7 +86,6 @@
             android:layout_marginBottom="8dp">
 
             <ImageView
-                android:id="@+id/users_profile_picture"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/profile"
@@ -86,14 +103,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_username"
+                        android:id="@+id/tv_users_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Arxy"
                         android:textStyle="bold"
                         android:layout_marginEnd="8dp"/>
                     <TextView
-                        android:id="@+id/tv_time"
+                        android:id="@+id/tv_users_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Time"
@@ -109,7 +126,7 @@
                         android:layout_height="20dp"
                         android:src="@drawable/star"/>
                     <TextView
-                        android:id="@+id/tv_rating"
+                        android:id="@+id/tv_users_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -118,7 +135,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tv_review"
+                    android:id="@+id/tv_users_review"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Mcnya mirip gw banget"/>
@@ -129,7 +146,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/edit_btn"
+                android:id="@+id/edit_user_review"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -138,6 +155,7 @@
                 android:backgroundTint="@color/light_blue"
                 />
             <Button
+                android:id="@+id/delete_user_review"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -6,4 +6,6 @@
     <color name="backgroundBtn">#4361EE</color>
     <color name="light_blue">#4361EE</color>
     <color name="dark_blue">#072842</color>
+    <color name="green">#388E3C</color>
+    <color name="red">#D32F2F</color>
 </resources>

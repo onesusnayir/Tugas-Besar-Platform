@@ -371,6 +371,8 @@ public class HomeFragment extends Fragment
         detailIntent.putExtra("artist", comic.getArtist());
         detailIntent.putExtra("poster", comic.getPoster());
         detailIntent.putExtra("synopsis", comic.getSynopsis());
+        detailIntent.putExtra("status", comic.getStatus());
+        detailIntent.putExtra("bookmarked",comic.getBookmarked());
 
         if (comic.getGenre() != null) {
             detailIntent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));

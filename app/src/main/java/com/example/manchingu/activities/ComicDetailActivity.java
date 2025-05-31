@@ -38,6 +38,8 @@ import com.example.manchingu.response.ProfileResponse;
 import com.example.manchingu.response.ReviewResponse;
 import com.google.gson.JsonObject;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,11 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     private RatingBar ratingBar;
     private ReviewAdapter adapter;
     private RecyclerView rvReview;
+    private TextView tvAvgRating;
+    private TextView tvComment;
+    private ImageView tvColorStatus;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +85,8 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         String artist = getIntent().getStringExtra("artist");
         String description = getIntent().getStringExtra("synopsis");
         String posterUrl = getIntent().getStringExtra("poster");
+        String status = getIntent().getStringExtra("status");
+        Integer bookmarked = getIntent().getIntExtra("bookmarked", 0);
         idComic = getIntent().getStringExtra("id_comic");
 //        ArrayList genre = getIntent().getIntegerArrayListExtra("genre");
 
@@ -97,6 +106,9 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         TextView tvDescription = findViewById(R.id.tvSynopsis);
         ImageView ivPoster = findViewById(R.id.ivPoster);
         TextView tvArtist = findViewById(R.id.tvArtist);
+        TextView tvStatus = findViewById(R.id.tvStatus);
+        TextView tvBookmarkNum = findViewById(R.id.tvBookmarkNum);
+        tvColorStatus = findViewById(R.id.tvColorStatus);
         
         // Inisialisasi Edit Text & Rating Bar
         etUlasan = findViewById(R.id.et_ulasan);
@@ -107,13 +119,30 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         tvAuthor.setText(author);
         tvDescription.setText(description);
         tvArtist.setText(artist);
-
+        tvStatus.setText(status);
+        tvBookmarkNum.setText(Integer.toString(bookmarked));
+        if (status != null) {
+            if (status.equalsIgnoreCase("ON_GOING")) {
+                tvStatus.setText("On-Going");
+                tvColorStatus.setColorFilter(ContextCompat.getColor(this, R.color.green));
+            } else if (status.equalsIgnoreCase("COMPLETED")) {
+                tvStatus.setText("Completed");
+                tvColorStatus.setColorFilter(ContextCompat.getColor(this, R.color.light_blue));
+            } else {
+                tvStatus.setText(status);
+            }
+        } else {
+            tvStatus.setText("Unknown Status");
+            tvColorStatus.setVisibility(View.GONE);
+        }
         // Adapter review
         adapter = new ReviewAdapter(reviewList,
                 this);
         rvReview = findViewById(R.id.rvReview);
         rvReview.setLayoutManager(new LinearLayoutManager(this));
         rvReview.setAdapter(adapter);
+        tvAvgRating = findViewById(R.id.tvAvgRating);
+        tvComment = findViewById(R.id.tvComment);
 
 
         Window window = getWindow();
@@ -178,20 +207,35 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
     private void getReviewComics() {
         apiService.getComicReviews("Bearer "+token, idComic)
             .enqueue(new Callback<ReviewResponse>() {
-                 @Override
-                 public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                     if (response.isSuccessful() && response.body() != null && response.body() != null) {
-                         List<ReviewResponse.ReviewData> items = response.body().getData();
+                @Override
+                public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body() != null) {
+                        List<ReviewResponse.ReviewData> items = response.body().getData();
 
-                         reviewList.clear();
-                         reviewList.addAll(items);
-                         adapter.notifyDataSetChanged();
-                     }
-                 }
+                        reviewList.clear();
+                        reviewList.addAll(items);
+                        adapter.notifyDataSetChanged();
+
+                        double totalRating = 0;
+                        int numberOfReviews = items.size();
+                        tvComment.setText(Integer.toString(numberOfReviews));
+
+                        if (numberOfReviews > 0) {
+                            for (ReviewResponse.ReviewData review : items) {
+                                totalRating += review.getRating();
+                            }
+                            double averageRating = totalRating / numberOfReviews;
+                            tvAvgRating.setText(String.format("%.1f", averageRating));
+                        } else {
+                            tvAvgRating.setText("0.0");
+                        }
+                    }
+                }
 
                  @Override
                  public void onFailure(Call<ReviewResponse> call, Throwable t) {
-
+                     Log.e("ComicDetail", "Failed to get reviews: " + t.getMessage());
+                     tvAvgRating.setText("N/A");
                  }
             }
         );

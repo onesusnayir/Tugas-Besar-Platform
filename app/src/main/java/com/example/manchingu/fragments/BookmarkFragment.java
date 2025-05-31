@@ -97,6 +97,8 @@ public class BookmarkFragment extends Fragment
                 intent.putExtra("poster", comic.getPoster());
                 intent.putExtra("synopsis", comic.getSynopsis());
                 intent.putExtra("id_comic", comic.getId_comic());
+                intent.putExtra("status",comic.getStatus());
+                intent.putExtra("bookmarked",comic.getBookmarked());
                 intent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));
                 startActivity(intent);
             }

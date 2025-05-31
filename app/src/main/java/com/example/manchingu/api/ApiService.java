@@ -78,6 +78,11 @@ public interface ApiService {
         @Header("Authorization") String token,
         @Path("comicId") String comickId
     );
+    @GET("/review/user")
+    Call<ReviewResponse> getUserReview(
+        @Header("Authorization") String token,
+        @Query("key") String key
+    );
 
     // User
     @GET("/user/{userId}")

@@ -197,8 +197,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         );
     }
 
-
-
     private void postNewReview(JsonObject reviewBody) {
         apiService.insertReview("Bearer "+token, idComic, reviewBody)
             .enqueue(new Callback<JsonObject>() {

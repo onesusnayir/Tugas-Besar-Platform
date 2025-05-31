@@ -171,6 +171,7 @@ public class HomeFragment extends Fragment
             sliderHandler.removeCallbacks(sliderRunnable);
             sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
         }
+        fetchComicsData();
     }
 
     @Override

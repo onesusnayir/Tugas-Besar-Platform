@@ -239,6 +239,8 @@ public class SearchFragment extends Fragment
         detailIntent.putExtra("artist", comic.getArtist());
         detailIntent.putExtra("poster", comic.getPoster());
         detailIntent.putExtra("synopsis", comic.getSynopsis());
+        detailIntent.putExtra("status",comic.getStatus());
+        detailIntent.putExtra("bookmarked",comic.getBookmarked());
 
         // Pastikan comic.getGenre() tidak null sebelum dimasukkan ke ArrayListExtra
         if (comic.getGenre() != null) {

@@ -84,7 +84,8 @@
                     <TextView
                         android:id="@+id/tvTitle"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
                         android:ellipsize="end"
                         android:gravity="start"
@@ -92,6 +93,76 @@
                         android:text="Nano Machine"
                         android:textSize="24sp"
                         android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            android:src="@drawable/star"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginLeft="4dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            android:text="4.2"
+                            android:textSize="50px"
+                            android:textColor="@color/light_blue"
+                            android:textStyle="normal"/>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="15dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_bookmark_24"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            android:text="20"
+                            android:textSize="50px"
+                            android:textStyle="normal" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="15dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_bookmark_24"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:gravity="start"
+                            android:textAlignment="viewStart"
+                            android:text="20"
+                            android:textSize="50px"
+                            android:textStyle="normal" />
+                    </LinearLayout>
 
                 </LinearLayout>
 

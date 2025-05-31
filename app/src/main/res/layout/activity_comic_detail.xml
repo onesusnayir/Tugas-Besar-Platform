@@ -318,7 +318,8 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvGenre"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/> <!-- Changed to wrap_content for better nesting behavior -->
+                        android:layout_height="wrap_content"
+                        /> <!-- Changed to wrap_content for better nesting behavior -->
 
                 </LinearLayout>
 

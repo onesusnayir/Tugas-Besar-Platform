@@ -39,6 +39,9 @@ import com.example.manchingu.response.ProfileResponse;
 import com.example.manchingu.response.ReviewResponse;
 import com.google.gson.JsonObject;
 
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -98,7 +101,10 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         ArrayList<String> genre = getIntent().getStringArrayListExtra("genre");
         RecyclerView rvGenre = findViewById(R.id.rvGenre);
         rvGenre.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW); // Atur arah flex menjadi baris
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Atur penempatan item
+        rvGenre.setLayoutManager(layoutManager);
         if (genre != null) {
             GenreAdapter genreAdapter = new GenreAdapter(genre);
             rvGenre.setAdapter(genreAdapter);

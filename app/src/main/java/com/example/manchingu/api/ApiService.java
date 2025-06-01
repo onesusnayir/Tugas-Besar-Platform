@@ -99,4 +99,8 @@ public interface ApiService {
     Call<ProfileResponse> getUserReview(
         @Path("userId") String userId
     );
+    @GET("user/my")
+    Call<ProfileResponse> getMyProfile(
+            @Header("Authorization") String token
+    );
 }

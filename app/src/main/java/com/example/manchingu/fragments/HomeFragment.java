@@ -1,5 +1,6 @@
 package com.example.manchingu.fragments; // Ganti dengan nama package fragment Anda
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2; // Import ViewPager2
 
 import com.example.manchingu.R;
+import com.example.manchingu.activities.ProfileActivity;
 import com.example.manchingu.adapter.AllComicAdapter; // Adapter untuk rekomendasi
 import com.example.manchingu.adapter.BannerPagerAdapter; // Adapter untuk banner carousel
 import com.example.manchingu.api.ApiClient;
@@ -30,6 +32,7 @@ import com.example.manchingu.api.ApiService;
 import com.example.manchingu.response.ComicResponse; // Model data dari API
 import com.example.manchingu.activities.AllComicsActivity; // Import Activity tujuan
 import com.example.manchingu.activities.ComicDetailActivity; // Import Activity tujuan
+import com.example.manchingu.response.ProfileResponse;
 
 
 import java.util.ArrayList;
@@ -49,6 +52,7 @@ public class HomeFragment extends Fragment
     SharedPreferences prefs;
     TextView tvUsername;
     Button seeComicsBtn;
+    ImageView profileImage;
     // BottomNavigationView bottomNav; // Hapus BottomNavigationView
 
     // --- Untuk Banner Carousel ---
@@ -57,7 +61,8 @@ public class HomeFragment extends Fragment
     private Handler sliderHandler; // Inisialisasi di onViewCreated
     private Runnable sliderRunnable; // Inisialisasi di onViewCreated
     private final long SLIDER_DELAY = 3000; // Delay dalam milidetik (3 detik) antar slide
-
+    private String userEmail;
+    private String userActualUsername;
     // --- Untuk RecyclerView Rekomendasi ---
     RecyclerView rvRekomendasi;
     AllComicAdapter adapter;
@@ -90,6 +95,8 @@ public class HomeFragment extends Fragment
 
         seeComicsBtn = view.findViewById(R.id.see_all_btn);
         seeComicsBtn.setOnClickListener(this); // Set listener klik untuk tombol Lihat Semua
+        profileImage = view.findViewById(R.id.profile); // Inisialisasi ImageView
+        profileImage.setOnClickListener(this); // Set listener klik untuk ImageView
 
         // Hapus inisialisasi dan listener untuk bottomNav di sini
 
@@ -157,7 +164,7 @@ public class HomeFragment extends Fragment
 
         // --- Panggil API untuk mendapatkan data ---
         fetchComicsData(); // Panggil method untuk fetch data dari API
-
+        fetchProfileData();
         return view; // Mengembalikan root view dari fragment layout
     }
 
@@ -194,6 +201,7 @@ public class HomeFragment extends Fragment
         // Opsional: Null-kan view references untuk mencegah memory leaks (penting pada Fragment)
         tvUsername = null;
         seeComicsBtn = null;
+        profileImage = null;
         bannerViewPager = null;
         rvRekomendasi = null;
         adapter = null;
@@ -332,7 +340,74 @@ public class HomeFragment extends Fragment
         });
     }
 
+    // --- Method baru untuk fetch data profil ---
+    private void fetchProfileData() {
+        if (apiService == null || getContext() == null) {
+            Log.e("HomeFragment", "ApiService or Context for Profile is not initialized.");
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Aplikasi sedang memuat profil, coba lagi nanti.", Toast.LENGTH_SHORT).show();
+            }
+            // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
+            return;
+        }
 
+        // if (progressBarProfile != null) progressBarProfile.setVisibility(View.VISIBLE); // <<< Tambahkan/Uncomment jika ada
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE); // Ganti "user_prefs" dengan nama shared preference yang benar
+        String token = sharedPreferences.getString("auth_token", null); // Ganti "auth_token" dengan key yang kamu gunakan
+
+        if (token == null) {
+            Toast.makeText(getContext(), "Autentikasi diperlukan untuk profil. Silakan login kembali.", Toast.LENGTH_LONG).show();
+            Log.e("HomeFragment", "Token not found for profile fetch.");
+            // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
+            return;
+        }
+
+        String fullToken = "Bearer " + token;
+
+        apiService.getMyProfile(fullToken).enqueue(new Callback<ProfileResponse>() {
+            @Override
+            public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
+                // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
+
+                if (response.isSuccessful() && response.body() != null) {
+                    ProfileResponse profileResponse = response.body();
+                    if (profileResponse.isSuccess()) {
+                        ProfileResponse.Data profileData = profileResponse.getData();
+                        if (profileData != null) {
+                            userActualUsername = profileData.getUsername();
+                            userEmail = profileData.getEmail();
+                            tvUsername.setText(userActualUsername); // Update TextView username di HomeFragment
+
+                            Log.d("HomeFragment", "Profile fetched: " + userActualUsername + ", " + userEmail);
+                        } else {
+                            Toast.makeText(getContext(), "Data profil kosong.", Toast.LENGTH_SHORT).show();
+                            Log.e("HomeFragment", "API Success, but Profile Data is null");
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Gagal memuat profil: " + response.message(), Toast.LENGTH_SHORT).show();
+                        Log.e("HomeFragment", "API Response Success: false, Message: " + response.message());
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Error respon profil dari server: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeFragment", "Profile Response not successful: " + response.code() + " - " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProfileResponse> call, Throwable t) {
+                if (!isAdded() || getContext() == null) {
+                    return;
+                }
+                // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
+                Toast.makeText(getContext(), "Gagal terhubung untuk profil: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("HomeFragment", "Profile API Call Failure: " + t.getMessage(), t);
+            }
+        });
+    }
     // --- Implementasi View.OnClickListener (untuk tombol Lihat Semua) ---
     @Override
     public void onClick(View v) {
@@ -342,6 +417,15 @@ public class HomeFragment extends Fragment
             startActivity(intent);
             // Hapus finish() karena ini Fragment, bukan Activity yang akan ditutup
             // Optional: finish();
+        }else if (v.getId() == R.id.profile && getContext() != null) { // Tambahkan blok ini
+            Intent intent = new Intent(getContext(), ProfileActivity.class);
+            startActivity(intent);
+        }else if (v.getId() == R.id.profile && getContext() != null) {
+            // Ketika tombol profil diklik, kirim data yang sudah di-fetch
+            Intent intent = new Intent(getContext(), ProfileActivity.class);
+            intent.putExtra("username", userActualUsername); // <<< Modifikasi: Kirim data
+            intent.putExtra("email", userEmail);       // <<< Modifikasi: Kirim data
+            startActivity(intent);
         }
     }
 

@@ -31,12 +31,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AllComicsActivity extends AppCompatActivity implements View.OnClickListener {
+    // RecyclerView Comics
     RecyclerView rvComics;
     AllComicAdapter adapter;
+
+    // List Comics
     List<ComicResponse.Item> comicList = new ArrayList<>();
+
+    // Button
     ImageView backBtn;
+
+    // Loading
     ProgressBar progressBar;
-    Fragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +54,19 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Inisialisasi
         rvComics = findViewById(R.id.rv_comics);
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         adapter = new AllComicAdapter(this, comicList, comic -> {
-            // TODO: Intent ke detail activity jika ingin
+            // Comic onClick: Pindah Ke Halaman Comic Detail Activity
             Intent intent = new Intent(AllComicsActivity.this, ComicDetailActivity.class);
             intent.putExtra("title", comic.getName());
             intent.putExtra("author", comic.getAuthor());
-            intent.putExtra("poster", comic.getPoster()); // URL atau drawable name
-            intent.putExtra("synopsis", comic.getSynopsis()); // jika ada
+            intent.putExtra("poster", comic.getPoster());
+            intent.putExtra("synopsis", comic.getSynopsis());
             intent.putExtra("id_comic", comic.getId_comic());
             startActivity(intent);
         });

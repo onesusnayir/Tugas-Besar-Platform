@@ -35,32 +35,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email"/>
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="10dp"
-            android:padding="15dp"
-            android:background="@drawable/rounded"
-            android:inputType="textEmailAddress"
-            android:hint="Username@gmail.com"
-            android:textColor="@color/white"/>
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="15dp"
+                android:background="@drawable/rounded"
+                android:inputType="textEmailAddress"
+                android:hint="Username@gmail.com"
+                android:textColor="@color/white"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Password"/>
-        <EditText
-            android:id="@+id/password"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:gravity="center_vertical"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
             android:background="@drawable/rounded"
-            android:inputType="textPassword"
-            android:hint="******"
-            android:textColor="@color/white"/>
+            android:gravity="center_vertical">
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:hint="******"
+                android:textColor="@color/white"/>
+            <ImageView
+                android:id="@+id/pass_is_shown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/eye_alt"
+                android:layout_marginHorizontal="10dp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <FrameLayout

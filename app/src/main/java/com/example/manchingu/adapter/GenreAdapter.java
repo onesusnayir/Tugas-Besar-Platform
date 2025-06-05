@@ -14,7 +14,6 @@ import java.util.List;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.GenreViewHolder> {
     private final List<String> genreList;
-
     public GenreAdapter(List<String> genreList) {
         this.genreList = genreList;
     }

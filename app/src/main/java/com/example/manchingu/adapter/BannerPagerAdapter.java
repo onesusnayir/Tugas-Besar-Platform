@@ -18,8 +18,10 @@ import java.util.List;
 
 public class BannerPagerAdapter extends RecyclerView.Adapter<BannerPagerAdapter.BannerViewHolder> {
 
-    private List<ComicResponse.Item> actualBannerList; // List data asli
-    private OnComicClickListener listener; // Listener untuk klik item
+    // List data asli
+    private List<ComicResponse.Item> actualBannerList;
+    // Listener untuk klik item
+    private OnComicClickListener listener;
 
     // Interface listener untuk notifikasi klik
     public interface OnComicClickListener {
@@ -28,19 +30,17 @@ public class BannerPagerAdapter extends RecyclerView.Adapter<BannerPagerAdapter.
 
     // Constructor
     public BannerPagerAdapter(OnComicClickListener listener) {
-        this.actualBannerList = new ArrayList<>(); // Mulai dengan list kosong
+        // Mulai dengan list kosong
+        this.actualBannerList = new ArrayList<>();
         this.listener = listener;
     }
 
     // Method untuk mengupdate data
     public void updateData(List<ComicResponse.Item> newList) {
         this.actualBannerList = newList;
-        // Tidak perlu notifyDataSetChanged() di sini karena kita akan melakukannya setelah setCurrentItem di Activity
-        // atau Anda bisa panggil notifyDataSetChanged() tapi perlu atur ulang setCurrentItem di Activity
-        // Saya akan menangani refresh di Activity setelah data datang.
     }
 
-    // Mendapatkan item data asli berdasarkan posisi ViewPager2 (yang besar)
+    // Mendapatkan item data asli berdasarkan posisi ViewPager2
     private ComicResponse.Item getActualItem(int position) {
         if (actualBannerList == null || actualBannerList.isEmpty()) {
             return null;
@@ -71,7 +71,7 @@ public class BannerPagerAdapter extends RecyclerView.Adapter<BannerPagerAdapter.
     @Override
     public BannerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_banner, parent, false);
+            .inflate(R.layout.item_banner, parent, false);
         return new BannerViewHolder(view);
     }
 
@@ -107,13 +107,11 @@ public class BannerPagerAdapter extends RecyclerView.Adapter<BannerPagerAdapter.
     public static class BannerViewHolder extends RecyclerView.ViewHolder {
         ImageView bannerImage;
         TextView bannerTitle;
-        // View overlay; // Jika Anda butuh akses ke overlay
 
         public BannerViewHolder(@NonNull View itemView) {
             super(itemView);
             bannerImage = itemView.findViewById(R.id.bannerItemImage);
             bannerTitle = itemView.findViewById(R.id.bannerItemTitle);
-            // overlay = itemView.findViewById(R.id.bannerItemOverlay);
         }
     }
 

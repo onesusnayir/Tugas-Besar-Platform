@@ -52,29 +52,39 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ComicDetailActivity extends AppCompatActivity implements View.OnClickListener {
+    // Input
+    private RatingBar ratingBar;
+    private EditText etUlasan;
+    // Button
+    private TextView updateBtn, tvPosting;
+    private Button deleteReviewBtn, editReviewBtn;
     private Button bookmarkBtn;
+    private ImageView backBtn;
+    // Api Client
     private ApiService apiService;
+    // Variabels
     private String token;
     private String idComic;
     private String title;
-    private SharedPreferences prefs;
-    private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
-    private List<ReviewResponse.ReviewData> reviewList = new ArrayList<>();
     private boolean isExsist = false;
     private String BookmarkId;
-    private ImageView backBtn;
-    private EditText etUlasan;
-    private RatingBar ratingBar;
+    private String reviewId;
+    // SharedPreferences
+    private SharedPreferences prefs;
+    // List comics dan review
+    private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
+    private List<ReviewResponse.ReviewData> reviewList = new ArrayList<>();
+    // Recycler View
     private ReviewAdapter adapter;
     private RecyclerView rvReview;
+    // View
     private TextView tvAvgRating;
     private TextView tvComment;
     private ImageView tvColorStatus;
+    // Layout
     private LinearLayout postUserReview, getUserReview;
-    private Button deleteReviewBtn, editReviewBtn;
-    private String reviewId;
+    // Object ReviewResponse.ReviewData
     private ReviewResponse.ReviewData reviewData;
-    private TextView updateBtn, tvPosting;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +105,6 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         String status = getIntent().getStringExtra("status");
         Integer bookmarked = getIntent().getIntExtra("bookmarked", 0);
         idComic = getIntent().getStringExtra("id_comic");
-//        ArrayList genre = getIntent().getIntegerArrayListExtra("genre");
 
         // Genre
         ArrayList<String> genre = getIntent().getStringArrayListExtra("genre");
@@ -110,7 +119,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
             rvGenre.setAdapter(genreAdapter);
         }
 
-        // Temukan view-nya
+        // Inisialisasi view-nya
         TextView tvTitle = findViewById(R.id.tvTitle);
         TextView tvAuthor = findViewById(R.id.tvAuthor);
         TextView tvDescription = findViewById(R.id.tvSynopsis);
@@ -148,18 +157,17 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
             tvColorStatus.setVisibility(View.GONE);
         }
         // Adapter review
-        adapter = new ReviewAdapter(reviewList,
-                this);
+        adapter = new ReviewAdapter(reviewList, this);
         rvReview = findViewById(R.id.rvReview);
         rvReview.setLayoutManager(new LinearLayoutManager(this));
         rvReview.setAdapter(adapter);
         tvAvgRating = findViewById(R.id.tvAvgRating);
         tvComment = findViewById(R.id.tvComment);
 
-
+        // Set Bottom Navbar Color
         Window window = getWindow();
-        window.setNavigationBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // samakan dengan warna BottomNavigationView
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.dark_blue)); // jika ingin atas juga sama
+        window.setNavigationBarColor(ContextCompat.getColor(this, R.color.dark_blue));
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.dark_blue));
 
         // Tampilkan gambar dengan Glide
         Glide.with(this)
@@ -170,11 +178,12 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         token = prefs.getString("token","");
 
+        // Get Api Client
         apiService = ApiClient.getApiService(this);
 
+        // Inisialisasi dan  Set OnClickListener Button
         bookmarkBtn = findViewById(R.id.bookmark_btn);
         bookmarkBtn.setOnClickListener(this);
-
         backBtn = findViewById(R.id.back_btn);
         backBtn.setOnClickListener(this);
         tvPosting = findViewById(R.id.tv_posting);
@@ -202,44 +211,7 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
         getUserReview();
     }
 
-    private void getUserReview() {
-        apiService.getUserReview("Bearer "+token, title)
-            .enqueue(new Callback<ReviewResponse>() {
-                    @Override
-                    public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body() != null) {
-                            List<ReviewResponse.ReviewData> items = response.body().getData();
-                            if (items.isEmpty()){
-                                postUserReview.setVisibility(View.VISIBLE);
-                                getUserReview.setVisibility(View.GONE);
-                            }else {
-                                reviewData = items.get(0);
-                                reviewId = items.get(0).getId_review();
-                                getUserReview.setVisibility(View.VISIBLE);
-                                postUserReview.setVisibility(View.GONE);
-
-                                TextView username, rating, reviewText, time;
-                                username = findViewById(R.id.tv_users_username);
-                                rating = findViewById(R.id.tv_users_rating);
-                                reviewText = findViewById(R.id.tv_users_review);
-                                time = findViewById(R.id.tv_users_time);
-
-                                username.setText("You");
-                                rating.setText(String.valueOf(items.get(0).getRating()));
-                                reviewText.setText(items.get(0).getReview_text());
-                                time.setText(items.get(0).getUpdated_at().split("T")[0]);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ReviewResponse> call, Throwable t) {
-
-                    }
-                }
-            );
-    }
-
+    // Method Button OnClick
     @Override
     public void onClick(View v) {
         // --- Bookmark Button ---
@@ -279,6 +251,44 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
             tvPosting.setVisibility(View.GONE);
             updateBtn.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void getUserReview() {
+        apiService.getUserReview("Bearer "+token, title)
+            .enqueue(new Callback<ReviewResponse>() {
+                @Override
+                public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body() != null) {
+                        List<ReviewResponse.ReviewData> items = response.body().getData();
+                        if (items.isEmpty()){
+                            postUserReview.setVisibility(View.VISIBLE);
+                            getUserReview.setVisibility(View.GONE);
+                        }else {
+                            reviewData = items.get(0);
+                            reviewId = items.get(0).getId_review();
+                            getUserReview.setVisibility(View.VISIBLE);
+                            postUserReview.setVisibility(View.GONE);
+
+                            TextView username, rating, reviewText, time;
+                            username = findViewById(R.id.tv_users_username);
+                            rating = findViewById(R.id.tv_users_rating);
+                            reviewText = findViewById(R.id.tv_users_review);
+                            time = findViewById(R.id.tv_users_time);
+
+                            username.setText("You");
+                            rating.setText(String.valueOf(items.get(0).getRating()));
+                            reviewText.setText(items.get(0).getReview_text());
+                            time.setText(items.get(0).getUpdated_at().split("T")[0]);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ReviewResponse> call, Throwable t) {
+
+                }
+            }
+        );
     }
 
     private void editUserReview() {
@@ -441,15 +451,8 @@ public class ComicDetailActivity extends AppCompatActivity implements View.OnCli
                 bookmarkBtn.setText(selectedStatus);
                 isExsist = true;
             }
-
-//            if (selectedStatus.equalsIgnoreCase("Completed")){
-//                Log.d("Test", selectedStatus);
-//            }
-
             dialog.dismiss();
         });
-
-
         dialog.show();
     }
 

@@ -353,9 +353,10 @@ public class HomeFragment extends Fragment
 
         // if (progressBarProfile != null) progressBarProfile.setVisibility(View.VISIBLE); // <<< Tambahkan/Uncomment jika ada
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE); // Ganti "user_prefs" dengan nama shared preference yang benar
-        String token = sharedPreferences.getString("auth_token", null); // Ganti "auth_token" dengan key yang kamu gunakan
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE); // Ganti "user_prefs" dengan nama shared preference yang benar
+        String token = sharedPreferences.getString("token", null); // Ganti "auth_token" dengan key yang kamu gunakan
 
+        Log.d("Token", token);
         if (token == null) {
             Toast.makeText(getContext(), "Autentikasi diperlukan untuk profil. Silakan login kembali.", Toast.LENGTH_LONG).show();
             Log.e("HomeFragment", "Token not found for profile fetch.");
@@ -417,9 +418,6 @@ public class HomeFragment extends Fragment
             startActivity(intent);
             // Hapus finish() karena ini Fragment, bukan Activity yang akan ditutup
             // Optional: finish();
-        }else if (v.getId() == R.id.profile && getContext() != null) { // Tambahkan blok ini
-            Intent intent = new Intent(getContext(), ProfileActivity.class);
-            startActivity(intent);
         }else if (v.getId() == R.id.profile && getContext() != null) {
             // Ketika tombol profil diklik, kirim data yang sudah di-fetch
             Intent intent = new Intent(getContext(), ProfileActivity.class);

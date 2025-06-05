@@ -29,11 +29,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    // Input
     EditText etEmail, etPassword;
+
+    // Button
     Button submitBtn;
-    ApiService apiService;
     TextView registerBtn;
+
+    // Loading
     ProgressBar progressBar;
+
+    // Api Client
+    ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +72,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         // Login Button OnClick: Post ke API
         if (v.getId() == R.id.submit_btn){
+            // Munculkan Loading & Nonaktifkan Button
             progressBar.setVisibility(View.VISIBLE);
-            submitBtn.setEnabled(false); // Nonaktifkan tombol
+            submitBtn.setEnabled(false);
+
+            // Fetch Login User
             loginUser();
         }
         // Register Button OnClick: Intent Register Activity
@@ -99,10 +109,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         call.enqueue(new Callback<UserResponse>(){
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                // Response 200
                 if (response.isSuccessful() && response.body() != null) {
                     UserResponse res = response.body();
                     Toast.makeText(LoginActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d("LOGIN_SUCCESS", "Token: " + res.getToken());
+
+                    // Matikan Loading
                     progressBar.setVisibility(View.GONE);
                     submitBtn.setEnabled(true);
 
@@ -113,9 +126,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.putString("token", res.getToken());
                     editor.apply();
 
+                    // Pindah ke halaman Dashboard
                     Intent home = new Intent(LoginActivity.this, DashboardActivity.class);
                     startActivity(home);
                 } else {
+                    // Matikan Loading
                     progressBar.setVisibility(View.GONE);
                     submitBtn.setEnabled(true);
                     Toast.makeText(LoginActivity.this, "Gagal Login", Toast.LENGTH_SHORT).show();
@@ -125,10 +140,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Show Error Message
                 Toast.makeText(LoginActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // Matikan Loading dan Hidupkan Button
                 progressBar.setVisibility(View.GONE);
                 submitBtn.setEnabled(true);
-                Log.e("LOGIN_ERROR", t.getMessage(), t);
             }
         });
     }

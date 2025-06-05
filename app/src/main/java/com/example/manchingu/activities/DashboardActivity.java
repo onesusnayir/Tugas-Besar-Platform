@@ -3,12 +3,12 @@ package com.example.manchingu.activities;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.activity.EdgeToEdge; // Jika menggunakan fitur EdgeToEdge
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets; // Jika menggunakan fitur EdgeToEdge
-import androidx.core.view.ViewCompat; // Jika menggunakan fitur EdgeToEdge
-import androidx.core.view.WindowInsetsCompat; // Jika menggunakan fitur EdgeToEdge
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,17 +18,15 @@ import com.example.manchingu.fragments.BookmarkFragment;
 import com.example.manchingu.fragments.HomeFragment;
 import com.example.manchingu.fragments.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView; // Gunakan ini
+import com.google.android.material.navigation.NavigationBarView;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
-
+    // Bottom Navbar
     private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Aktifkan Edge-to-Edge jika diinginkan (sesuai template baru)
         EdgeToEdge.enable(this);
 
         setContentView(R.layout.activity_dashboard);
@@ -44,19 +42,20 @@ public class DashboardActivity extends AppCompatActivity implements NavigationBa
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnItemSelectedListener(this);
 
-        // Muat fragment default saat pertama kali Activity dibuat (misal: HomeFragment)
+        // Muat fragment Home
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment()); // Panggil method bantu untuk memuat fragment
-            bottomNavigationView.setSelectedItemId(R.id.nav_home); // Set item Home terpilih di nav
+            loadFragment(new HomeFragment());
+            // Set item Home terpilih di nav
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
     }
 
-    // Method bantu untuk memuat Fragment ke dalam FrameLayout
+    // Method untuk memuat Fragment ke dalam FrameLayout
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment) // Ganti fragment_container dengan fragment baru
-                .commit(); // Selesaikan transaksi
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
     }
 
     // Implementasi listener untuk BottomNavigationView
@@ -74,21 +73,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationBa
         }
 
         if (selectedFragment != null) {
-            loadFragment(selectedFragment); // Muat fragment yang dipilih
+            // Muat fragment yang dipilih
+            loadFragment(selectedFragment);
             return true; // Menandakan item click ditangani
         }
 
         return false; // Menandakan item click tidak ditangani
     }
-
-    // Optional: Tambahkan onBackPressed jika perlu mengelola back stack Fragment
-    // @Override
-    // public void onBackPressed() {
-    //     FragmentManager fm = getSupportFragmentManager();
-    //     if (fm.getBackStackEntryCount() > 0) {
-    //         fm.popBackStack();
-    //     } else {
-    //         super.onBackPressed();
-    //     }
-    // }
 }

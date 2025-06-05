@@ -23,7 +23,6 @@ public class AllComicAdapter extends RecyclerView.Adapter<AllComicAdapter.ComicV
     private List<ComicResponse.Item> comicList;
     private OnComicClickListener listener;
 
-
     // Interface untuk klik item
     public interface OnComicClickListener {
         void onComicClick(ComicResponse.Item comic);

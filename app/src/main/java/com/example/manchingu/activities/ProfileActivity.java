@@ -1,10 +1,12 @@
 package com.example.manchingu.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar; // Jika kamu ingin pakai ProgressBar
 import android.widget.TextView;
@@ -26,12 +28,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
-
+    // Button
     ImageView backBtn;
+    Button logoutBtn;
+
+    // View
     TextView tvUsername;
     TextView tvEmail;
-    // ProgressBar progressBar; // Deklarasikan jika ada di layout dan ingin digunakan
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,48 +48,63 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         // Inisialisasi Views
         backBtn = findViewById(R.id.back_btn);
+        logoutBtn = findViewById(R.id.logout_button);
         tvUsername = findViewById(R.id.tp_username);
         tvEmail = findViewById(R.id.tp_email);
-        // progressBar = findViewById(R.id.progressBar); // Inisialisasi jika ada
-        // if (progressBar != null) {
-        //     progressBar.setVisibility(View.VISIBLE); // Tampilkan ProgressBar saat loading
-        // }
 
-
+        // Button Click Listener
         backBtn.setOnClickListener(this);
+        logoutBtn.setOnClickListener(this);
 
         // Panggil fetch data profil
         fetchProfileData();
     }
+    // OnClick Fuction
+    @Override
+    public void onClick(View v) {
+        // Kembali ke Activity sebelumnya
+        if (v.getId() == R.id.back_btn) {
+            finish();
+        }
+        // Logout
+        else if (v.getId() == R.id.logout_button) {
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear();
+            editor.apply();
 
+            // Kembali Ke Halaman Login
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Menghapus backstack
+            startActivity(intent);
+        }
+    }
+
+    // Fetch Data Profile User
     private void fetchProfileData() {
-        // Ambil ApiService dari ApiClient yang sudah kamu gunakan
-        ApiService apiService = ApiClient.getApiService(this); // Menggunakan method yang menerima Context
+        ApiService apiService = ApiClient.getApiService(this);
 
         // Ambil token dari SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);
 
         if (token == null) {
             Toast.makeText(this, "Autentikasi diperlukan. Silakan login kembali.", Toast.LENGTH_LONG).show();
-            // Optional: Arahkan ke LoginActivity
-            // Intent loginIntent = new Intent(ProfileActivity.this, LoginActivity.class);
-            // startActivity(loginIntent);
             finish();
             return;
         }
 
-        String fullToken = "Bearer " + token; // Sesuaikan format token jika diperlukan
+        // Bearer Authentication
+        String fullToken = "Bearer " + token;
 
         // Panggil API untuk mendapatkan profil
         apiService.getMyProfile(fullToken).enqueue(new Callback<ProfileResponse>() {
             @Override
             public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
-                // if (progressBar != null) {
-                //     progressBar.setVisibility(View.GONE); // Sembunyikan ProgressBar
-                // }
                 if (response.isSuccessful() && response.body() != null) {
                     ProfileResponse profileResponse = response.body();
+
+                    // Response 200
                     if (profileResponse.isSuccess()) {
                         ProfileResponse.Data profileData = profileResponse.getData();
                         if (profileData != null) {
@@ -108,19 +126,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onFailure(Call<ProfileResponse> call, Throwable t) {
-                // if (progressBar != null) {
-                //     progressBar.setVisibility(View.GONE); // Sembunyikan ProgressBar
-                // }
                 Toast.makeText(ProfileActivity.this, "Gagal terhubung ke server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("ProfileActivity", "API Call Failure: " + t.getMessage(), t);
             }
         });
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.back_btn) {
-            finish(); // Kembali ke Activity sebelumnya
-        }
     }
 }

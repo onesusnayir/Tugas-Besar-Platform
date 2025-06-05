@@ -37,16 +37,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// Implementasikan SearchAdapter.OnComicClickListener dan View.OnClickListener (jika ada view yang perlu click)
-// Hapus implementasi BottomNavigationView listener
+// Implementasikan SearchAdapter.OnComicClickListener dan View.OnClickListener
 public class SearchFragment extends Fragment
-        implements SearchAdapter.OnComicClickListener { // View.OnClickListener dihapus karena tidak ada tombol klik selain editTextSearch action
-
-    // private BottomNavigationView bottomNavigationView; // Hapus BottomNavigationView
+        implements SearchAdapter.OnComicClickListener {
+    // Input
     private EditText editTextSearch;
-    // private Button buttonFilter; // Dihapus dari Activity
+
+    // Recycler View
     private RecyclerView rvSearch;
     private SearchAdapter searchAdapter;
+
+    // Api Client
     private ApiService apiService;
 
     // Loading
@@ -64,43 +65,29 @@ public class SearchFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         // --- Inisialisasi Views ---
-        // bottomNavigationView = view.findViewById(R.id.bottomNavigation); // Hapus
         editTextSearch = view.findViewById(R.id.editTextSearch);
-        // buttonFilter = view.findViewById(R.id.buttonFilter); // Dihapus
         rvSearch = view.findViewById(R.id.rvSearch);
 
         // --- Inisialisasi Loading
         progressBar = view.findViewById(R.id.progressBar);
 
         // --- Inisialisasi RecyclerView ---
-        // Bersinggungan: Gunakan getContext() sebagai context untuk adapter
-        if (getContext() != null) { // Tambahkan null check
-            searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), this); // 'this' sebagai listener
-            // Pilih LayoutManager sesuai desain item_comic_grid.xml Anda
-            // Bersinggungan: Gunakan getContext() untuk LayoutManager
-            rvSearch.setLayoutManager(new GridLayoutManager(getContext(), 2)); // Untuk grid 2 kolom
-
+        if (getContext() != null) {
+            searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), this);
+            rvSearch.setLayoutManager(new GridLayoutManager(getContext(), 2));
             rvSearch.setAdapter(searchAdapter);
         } else {
             Log.e("SearchFragment", "Context is null when setting up RecyclerView.");
-            // Handle error, maybe show an empty state or error message
         }
 
 
         // --- Inisialisasi API Service ---
-        // Bersinggungan: Gunakan getContext() saat memanggil getApiService()
-        if (getContext() != null) { // Tambahkan null check
+        if (getContext() != null) {
             apiService = ApiClient.getApiService(getContext());
         } else {
             Log.e("SearchFragment", "Context is null when initializing ApiService.");
-            // Handle error, API calls will fail later
+
         }
-
-
-        // --- Set Listener untuk Bottom Navigation ---
-        // Hapus set listener bottom navigation karena ditangani di Activity host
-        // bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        // bottomNavigationView.setSelectedItemId(R.id.nav_search); // Ini akan ditangani di Activity host
 
         // --- Set Listener untuk Search EditText ---
         editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
@@ -115,76 +102,68 @@ public class SearchFragment extends Fragment
             return false;
         });
 
-        // --- Set OnClickListener untuk Filter Button ---
-        // buttonFilter.setOnClickListener(v -> showFilterMenu(v)); // Dihapus
-
         return view; // Mengembalikan root view dari fragment layout
     }
 
     // --- Method untuk Melakukan Pencarian API ---
     private void performSearch() {
         String query = editTextSearch.getText().toString().trim();
-        // Bersinggungan: Gunakan getContext() untuk Toast
         if (query.isEmpty()) {
             if (getContext() != null) Toast.makeText(getContext(), "Masukkan judul komik untuk dicari", Toast.LENGTH_SHORT).show();
-            // Bersinggungan: Pastikan adapter tidak null sebelum update data
-            if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>()); // Kosongkan hasil sebelumnya
+            if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>());
             return;
         }
 
-        // Bersinggungan: Perlu null check pada apiService dan getContext()
+        // Cek Api Client & Context
         if (apiService == null || getContext() == null) {
             Log.e("SearchFragment", "ApiService or Context is null, cannot perform search.");
             if (getContext() != null) {
-                // Hanya tampilkan toast jika fragment terhubung ke activity
                 if (isAdded()) Toast.makeText(getContext(), "Aplikasi sedang memuat, coba lagi nanti.", Toast.LENGTH_SHORT).show();
             }
-            if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>()); // Kosongkan hasil sebelumnya
+            // Kosongkan hasil sebelumnya
+            if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>());
             return;
         }
-
-
-        // Tampilkan indikator loading (opsional)
 
         apiService.getComicByTitle(query).enqueue(new Callback<ComicResponse>() {
             @Override
             public void onResponse(@NonNull Call<ComicResponse> call, @NonNull Response<ComicResponse> response) {
-                // Sembunyikan indikator loading (opsional)
+                // Matikan Loading
                 progressBar.setVisibility(View.GONE);
 
                 // Pastikan Fragment masih attached sebelum update UI
-                // Bersinggungan: Tambahkan isAdded() check sebelum mengakses context atau update UI
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
 
+                // Kode 200
                 if (response.isSuccessful() && response.body() != null) {
                     ComicResponse comicResponse = response.body();
 
                     ComicResponse.Data data = comicResponse.getData();
                     List<ComicResponse.Item> comicList = new ArrayList<>();
 
+                    // Ambil list item dari objek Data
                     if (data != null && data.getItems() != null) {
-                        comicList = data.getItems(); // Ambil list item dari objek Data
+                        comicList = data.getItems();
                     }
 
                     if (!comicList.isEmpty()) {
-                        // Bersinggungan: Pastikan adapter tidak null sebelum update data
-                        if (searchAdapter != null) searchAdapter.updateData(comicList); // Update adapter dengan data dari API
+                        // Update adapter dengan data dari API
+                        if (searchAdapter != null) searchAdapter.updateData(comicList);
                         else Log.w("SearchFragment", "Search Adapter is null in onResponse success.");
                     } else {
-                        // Bersinggungan: Gunakan getContext() untuk Toast
                         if (getContext() != null) Toast.makeText(getContext(), "Komik dengan judul \"" + query + "\" tidak ditemukan", Toast.LENGTH_SHORT).show();
-                        // Bersinggungan: Pastikan adapter tidak null
-                        if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>()); // Kosongkan RecyclerView jika tidak ada hasil
+
+                        // Kosongkan RecyclerView jika tidak ada hasil
+                        if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>());
                         else Log.w("SearchFragment", "Search Adapter is null in onResponse empty.");
                     }
 
                 } else {
-                    // Handle respon gagal (misalnya, status code 404, 500, dll.)
-                    // Bersinggungan: Gunakan getContext() untuk Toast
+                    // Handle respon gagal (status code 404, 500, dll.)
                     if (getContext() != null) Toast.makeText(getContext(), "Gagal mendapatkan data: " + response.code(), Toast.LENGTH_SHORT).show();
-                    // Bersinggungan: Pastikan adapter tidak null
+
                     if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>()); // Kosongkan RecyclerView
                     else Log.w("SearchFragment", "Search Adapter is null in onResponse failure.");
                 }
@@ -192,18 +171,18 @@ public class SearchFragment extends Fragment
 
             @Override
             public void onFailure(@NonNull Call<ComicResponse> call, @NonNull Throwable t) {
-                // Sembunyikan indikator loading (opsional)
+                // Sembunyikan indikator loading
+                progressBar.setVisibility(View.GONE);
 
                 // Pastikan Fragment masih attached
-                // Bersinggungan: Tambahkan isAdded() check sebelum mengakses context atau update UI
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
 
-                // Bersinggungan: Gunakan getContext() untuk Toast
+
                 if (getContext() != null) Toast.makeText(getContext(), "Error koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
-                // Bersinggungan: Pastikan adapter tidak null
+                // Pastikan adapter tidak null
                 if (searchAdapter != null) searchAdapter.updateData(new ArrayList<>()); // Kosongkan RecyclerView
                 else Log.w("SearchFragment", "Search Adapter is null in onFailure.");
             }
@@ -211,7 +190,6 @@ public class SearchFragment extends Fragment
     }
 
     // Helper method untuk menyembunyikan keyboard
-    // Bersinggungan: Menggunakan getContext() dan findViewById pada root view fragment
     private void hideKeyboard(View view) {
         if (getContext() == null || view == null) return;
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -225,7 +203,6 @@ public class SearchFragment extends Fragment
     @Override
     public void onComicClick(ComicResponse.Item comic) {
         // Logika navigasi ke detail komik ketika item diklik
-        // Bersinggungan: Menggunakan getContext() untuk membuat Intent
         if (getContext() == null) {
             Log.e("SearchFragment", "Context is null when trying to open detail.");
             return;
@@ -251,13 +228,7 @@ public class SearchFragment extends Fragment
 
         // Memulai DetailComicActivity
         startActivity(detailIntent);
-        // Hapus finish() karena ini Fragment
-        // finish();
     }
-
-    // Hapus implementasi onNavigationItemSelected karena ditangani di Activity host
-    // @Override
-    // public boolean onNavigationItemSelected(@NonNull MenuItem item) { ... }
 
     // Optional: Bersihkan referensi View di onDestroyView
     @Override
@@ -266,6 +237,5 @@ public class SearchFragment extends Fragment
         editTextSearch = null;
         rvSearch = null;
         searchAdapter = null;
-        // apiService tidak perlu di-null karena bukan View reference
     }
 }

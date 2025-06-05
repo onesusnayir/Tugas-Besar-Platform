@@ -35,17 +35,25 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // Implementasikan View.OnClickListener dan BookmarkAdapter.OnComicClickListener
-// Hapus implementasi BottomNavigationView listener
 public class BookmarkFragment extends Fragment
         implements View.OnClickListener {
-
+    // Recycler View Daftar Bookmark
     private RecyclerView rvBookmark;
-    private SharedPreferences prefs;
-    private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
     private BookmarkAdapter adapter;
+    // SharedPreferences untuk Token
+    private SharedPreferences prefs;
+    // List Comics
+    private List<BookmarkResponse.Comic> comicList = new ArrayList<>();
+    // Api Client
     private ApiService apiService;
+    // Token autentikasi dari SharedPreferences
     private String token;
-    private TextView CompletedBtn, ReadingBtn, DroppedBtn, PlanToReadBtn;
+    // Kategori Bookmark Button
+    private TextView CompletedBtn;
+    private TextView ReadingBtn;
+    private TextView DroppedBtn;
+    private TextView PlanToReadBtn;
+    //Loading
     private ProgressBar progressBar;
 
     @Override
@@ -60,6 +68,7 @@ public class BookmarkFragment extends Fragment
         DroppedBtn = view.findViewById(R.id.dropped_btn);
         PlanToReadBtn = view.findViewById(R.id.plan_to_read_btn);
 
+        // Menampilkan RecyclerView
         ShowBookmarkRecyclerView();
 
         // Get Token dari SharedPrefereces
@@ -70,8 +79,11 @@ public class BookmarkFragment extends Fragment
         // Memanggil fungsi ApiClient.getApiService()
         apiService = ApiClient.getApiService(getActivity());
 
+        // Show Loading dan Matikan Button
         progressBar = view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
+
+        // Menampilkan Bookmark Status = Completed
         GetBookmark("COMPLETED");
         CompletedBtn.setBackgroundResource(R.drawable.rounded);
         CompletedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
@@ -85,11 +97,71 @@ public class BookmarkFragment extends Fragment
         return view;
     }
 
+    // Method OnClick
+    @Override
+    public void onClick(View v) {
+        // Menampilkan Daftar Bookmark dengan status = Completed
+        if (v.getId() == R.id.completed_btn){
+            // Loading
+            progressBar.setVisibility(View.VISIBLE);
+            // Fetch Bookmark status = completed
+            GetBookmark("COMPLETED");
+            CompletedBtn.setBackgroundResource(R.drawable.rounded);
+            CompletedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
+
+            DroppedBtn.setBackground(null);
+            ReadingBtn.setBackground(null);
+            PlanToReadBtn.setBackground(null);
+        }
+        // Menampilkan Daftar Bookmark dengan status = Dropped
+        else if (v.getId() == R.id.dropped_btn) {
+            // Loading
+            progressBar.setVisibility(View.VISIBLE);
+            // Fetch Bookmark status = Dropped
+            GetBookmark("DROPPED");
+            DroppedBtn.setBackgroundResource(R.drawable.rounded);
+            DroppedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
+
+            CompletedBtn.setBackground(null);
+            ReadingBtn.setBackground(null);
+            PlanToReadBtn.setBackground(null);
+        }
+        // Menampilkan Daftar Bookmark dengan status = Reading
+        else if (v.getId() == R.id.reading_btn) {
+            // Loading
+            progressBar.setVisibility(View.VISIBLE);
+            // Fetch Bookmark status = Reading
+            GetBookmark("READING");
+            ReadingBtn.setBackgroundResource(R.drawable.rounded);
+            ReadingBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
+
+            CompletedBtn.setBackground(null);
+            DroppedBtn.setBackground(null);
+            PlanToReadBtn.setBackground(null);
+        }
+        // Menampilkan Daftar Bookmark dengan status = Plan to Read
+        else if (v.getId() == R.id.plan_to_read_btn) {
+            // Loading
+            progressBar.setVisibility(View.VISIBLE);
+            // Fetch Bookmark status = Plan to Read
+            GetBookmark("PLAN_TO_READ");
+            PlanToReadBtn.setBackgroundResource(R.drawable.rounded);
+            PlanToReadBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
+
+            CompletedBtn.setBackground(null);
+            DroppedBtn.setBackground(null);
+            ReadingBtn.setBackground(null);
+        }
+    }
+
+    // Method Recycler View Bookmark
     private void ShowBookmarkRecyclerView() {
         rvBookmark.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         adapter = new BookmarkAdapter(getActivity(), comicList, new BookmarkAdapter.OnComicClickListener() {
+            // Recycler View OnClick
             @Override
             public void onComicClick(BookmarkResponse.Comic comic) {
+                // Pindah Ke Halaman Detail Comic Activity
                 Intent intent = new Intent(getActivity(), ComicDetailActivity.class);
                 intent.putExtra("title", comic.getName());
                 intent.putExtra("author", comic.getAuthor());
@@ -106,73 +178,31 @@ public class BookmarkFragment extends Fragment
         rvBookmark.setAdapter(adapter);
     }
 
+
+    // Fetch Bookmark Berdasarkan Status
     private void GetBookmark(String status) {
-        // memanggil method ApiService.getAllMyBookmark dengan token user
+        // Memanggil method ApiService.getAllMyBookmark dengan token user
         apiService.getMyBookmark("Bearer "+token, status)
-                .enqueue(new Callback<BookmarkResponse>() {
-                             @Override
-                             public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
-                                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                                     progressBar.setVisibility(View.GONE);
-                                     comicList.clear();
-                                     for (BookmarkResponse.Data bookmark : response.body().getData()) {
-                                         comicList.add(bookmark.getComic());
-                                     }
-                                     adapter.notifyDataSetChanged();
-                                 }
-                             }
-
-                             @Override
-                             public void onFailure(Call<BookmarkResponse> call, Throwable t) {
-                                     progressBar.setVisibility(View.GONE);
-
-                             }
+            .enqueue(new Callback<BookmarkResponse>() {
+                 @Override
+                 public void onResponse(Call<BookmarkResponse> call, Response<BookmarkResponse> response) {
+                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                         progressBar.setVisibility(View.GONE);
+                         comicList.clear();
+                         for (BookmarkResponse.Data bookmark : response.body().getData()) {
+                             comicList.add(bookmark.getComic());
                          }
-                );
-    }
+                         adapter.notifyDataSetChanged();
+                     }
+                 }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.completed_btn){
-            progressBar.setVisibility(View.VISIBLE);
-            GetBookmark("COMPLETED");
-            CompletedBtn.setBackgroundResource(R.drawable.rounded);
-            CompletedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
+                 @Override
+                 public void onFailure(Call<BookmarkResponse> call, Throwable t) {
+                         progressBar.setVisibility(View.GONE);
 
-            DroppedBtn.setBackground(null);
-            ReadingBtn.setBackground(null);
-            PlanToReadBtn.setBackground(null);
-        }
-        else if (v.getId() == R.id.dropped_btn) {
-            progressBar.setVisibility(View.VISIBLE);
-            GetBookmark("DROPPED");
-            DroppedBtn.setBackgroundResource(R.drawable.rounded);
-            DroppedBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
-
-            CompletedBtn.setBackground(null);
-            ReadingBtn.setBackground(null);
-            PlanToReadBtn.setBackground(null);
-        }
-        else if (v.getId() == R.id.reading_btn) {
-            progressBar.setVisibility(View.VISIBLE);
-            GetBookmark("READING");
-            ReadingBtn.setBackgroundResource(R.drawable.rounded);
-            ReadingBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
-
-            CompletedBtn.setBackground(null);
-            DroppedBtn.setBackground(null);
-            PlanToReadBtn.setBackground(null);
-        }
-        else if (v.getId() == R.id.plan_to_read_btn) {
-            progressBar.setVisibility(View.VISIBLE);
-            GetBookmark("PLAN_TO_READ");
-            PlanToReadBtn.setBackgroundResource(R.drawable.rounded);
-            PlanToReadBtn.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.backgroundBtn));
-
-            CompletedBtn.setBackground(null);
-            DroppedBtn.setBackground(null);
-            ReadingBtn.setBackground(null);
-        }
+                 }
+             }
+        );
     }
 
     // Optional: Bersihkan referensi View di onDestroyView

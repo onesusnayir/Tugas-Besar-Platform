@@ -19,7 +19,8 @@ import java.util.List;
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
     private Context context;
-    private List<ComicResponse.Item> comicList; // Menggunakan Item dari ComicResponse
+    // Menggunakan Item dari ComicResponse
+    private List<ComicResponse.Item> comicList;
     private OnComicClickListener listener;
 
     // Interface untuk klik item
@@ -43,9 +44,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Meng-inflate layout untuk setiap item.
-        // Kita asumsikan menggunakan layout yang sama dengan AllComicAdapter
-        // yaitu R.layout.item_comic_grid. Jika layout search item berbeda, ganti di sini.
         View view = LayoutInflater.from(context).inflate(R.layout.item_comic_grid, parent, false);
         return new SearchViewHolder(view);
     }
@@ -55,18 +53,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         // Mengambil objek ComicResponse.Item pada posisi saat ini
         ComicResponse.Item comic = comicList.get(position);
 
-        // Mengikat data ke elemen UI di ViewHolder
-        // Pastikan ComicResponse.Item punya method getName() dan getAuthor()
         holder.tvName.setText(comic.getName());
         holder.tvAuthor.setText(comic.getAuthor());
 
         // Menggunakan Glide untuk memuat gambar poster
-        // Pastikan ComicResponse.Item punya method getPoster()
         Glide.with(context)
                 .load(comic.getPoster())
-                // Opsional: tambahkan placeholder dan error image
-                // .placeholder(R.drawable.placeholder_image)
-                // .error(R.drawable.error_image)
                 .into(holder.ivPoster);
 
         // Menangani klik pada item
@@ -93,7 +85,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
             // Menghubungkan variabel dengan View di layout menggunakan ID
-            // Pastikan ID ini sesuai dengan yang ada di item_comic_grid.xml
             ivPoster = itemView.findViewById(R.id.ivPoster);
             tvName = itemView.findViewById(R.id.tvName);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);

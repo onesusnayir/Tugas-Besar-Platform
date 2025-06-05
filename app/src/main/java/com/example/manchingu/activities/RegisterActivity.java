@@ -27,10 +27,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+    // Input
     EditText etUsername, etEmail, etPassword, etConfirmPassword;
+
+    // Button
     Button submitBtn;
     TextView loginBtn;
+
+    // Api Clinet
     ApiService apiService;
+
+    // Loading
     ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         loginBtn = findViewById(R.id.login_btn);
         progressBar = findViewById(R.id.progressBar);
 
+        // Get Api Client
         apiService = ApiClient.getApiService(this);
 
         // OnClickListener
@@ -101,26 +109,37 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         call.enqueue(new Callback<UserResponse>(){
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                // Response 200
                 if (response.isSuccessful() && response.body() != null) {
                     UserResponse res = response.body();
                     Toast.makeText(RegisterActivity.this, res.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    // Matikan Loading & Nyalakan Button
                     progressBar.setVisibility(View.GONE);
                     submitBtn.setEnabled(true);
                     Log.d("REGISTER_SUCCESS", "Token: " + res.getToken());
+
+                    // Pindah Ke Halaman Login
+                    Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(login);
                 } else {
+                    // Matikan Loading & Nyalakan Button
                     progressBar.setVisibility(View.GONE);
                     submitBtn.setEnabled(true);
+
+                    // Show Cannot Register Message
                     Toast.makeText(RegisterActivity.this, "Gagal mendaftar", Toast.LENGTH_SHORT).show();
                     Log.e("REGISTER_FAIL", "Code: " + response.code());
                 }
-                Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
-                startActivity(login);
             }
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Matikan Loading dan Nyalakan Button
                 progressBar.setVisibility(View.GONE);
                 submitBtn.setEnabled(true);
+
+                // Show Error
                 Toast.makeText(RegisterActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("REGISTER_ERROR", t.getMessage(), t);
             }

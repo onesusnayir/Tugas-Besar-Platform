@@ -2,12 +2,15 @@ package com.example.manchingu.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,17 +33,21 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     // Input
-    EditText etEmail, etPassword;
+    private EditText etEmail, etPassword;
 
     // Button
-    Button submitBtn;
-    TextView registerBtn;
+    private Button submitBtn;
+    private TextView registerBtn;
+    private ImageView passIsShownBtn;
 
     // Loading
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     // Api Client
-    ApiService apiService;
+    private ApiService apiService;
+
+    // Variabels
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         submitBtn = findViewById(R.id.submit_btn);
         registerBtn = findViewById(R.id.register_btn);
+        passIsShownBtn = findViewById(R.id.pass_is_shown);
         progressBar = findViewById(R.id.progressBar);
 
         apiService = ApiClient.getApiService(this);
@@ -66,6 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // OnClickListener
         submitBtn.setOnClickListener(this);
         registerBtn.setOnClickListener(this);
+        passIsShownBtn.setOnClickListener(this);
     }
 
     @Override
@@ -83,6 +92,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         else if(v.getId() == R.id.register_btn){
             Intent register = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(register);
+        }
+        // PassIsShown Button OnClick: Menampilkan Password
+        else if (v.getId() == R.id.pass_is_shown) {
+            // Untuk Font
+            Typeface typeface = etPassword.getTypeface();
+            int selection = etPassword.getSelectionStart();
+            if (isPasswordVisible) {
+                // Ubah ke mode sembunyi password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                passIsShownBtn.setImageResource(R.drawable.eye_alt);
+                isPasswordVisible = !isPasswordVisible;
+            } else {
+                // Ubah ke mode tampilkan password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                passIsShownBtn.setImageResource(R.drawable.eye_closed);
+                isPasswordVisible = !isPasswordVisible;
+            }
+            // Untuk Font
+            etPassword.setTypeface(typeface);
+            etPassword.setSelection(selection);
         }
     }
 

@@ -1,11 +1,14 @@
 package com.example.manchingu.activities;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,17 +31,22 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
     // Input
-    EditText etUsername, etEmail, etPassword, etConfirmPassword;
+    private EditText etUsername, etEmail, etPassword, etConfirmPassword;
 
     // Button
-    Button submitBtn;
-    TextView loginBtn;
+    private Button submitBtn;
+    private TextView loginBtn;
+    private ImageView passIsShownBtn, passConfirmIsShownBtn;
 
     // Api Clinet
-    ApiService apiService;
+    private ApiService apiService;
 
     // Loading
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
+
+    // Variabels
+    private boolean isPassVisible = false;
+    private boolean isConfirmPassVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +59,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         });
 
         // Inisialisasi
+        // Input
         etUsername = findViewById(R.id.username);
         etEmail = findViewById(R.id.email);
         etPassword = findViewById(R.id.password);
         etConfirmPassword = findViewById(R.id.confirm_password);
+
+        // button
         submitBtn = findViewById(R.id.submit_btn);
         loginBtn = findViewById(R.id.login_btn);
+        passIsShownBtn = findViewById(R.id.pass_is_shown);
+        passConfirmIsShownBtn = findViewById(R.id.pass_confirm_is_shown);
+
+        // loading
         progressBar = findViewById(R.id.progressBar);
 
         // Get Api Client
@@ -65,6 +80,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         // OnClickListener
         submitBtn.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
+        passIsShownBtn.setOnClickListener(this);
+        passConfirmIsShownBtn.setOnClickListener(this);
     }
 
     @Override
@@ -79,6 +96,46 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         else if (v.getId() == R.id.login_btn) {
             Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(login);
+        }
+        // PassIsShown Button OnClick: Menampilkan Password
+        else if (v.getId() == R.id.pass_is_shown) {
+            // Untuk Font
+            Typeface typeface = etPassword.getTypeface();
+            int selection = etPassword.getSelectionStart();
+            if (isPassVisible) {
+                // Ubah ke mode sembunyi password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                passIsShownBtn.setImageResource(R.drawable.eye_alt);
+                isPassVisible = !isPassVisible;
+            } else {
+                // Ubah ke mode tampilkan password
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                passIsShownBtn.setImageResource(R.drawable.eye_closed);
+                isPassVisible = !isPassVisible;
+            }
+            // Untuk Font
+            etPassword.setTypeface(typeface);
+            etPassword.setSelection(selection);
+        }
+        // PassConfirmIsShown Button OnClick: Menampilkan Password
+        else if (v.getId() == R.id.pass_confirm_is_shown) {
+            // Untuk Font
+            Typeface typeface = etConfirmPassword.getTypeface();
+            int selection = etConfirmPassword.getSelectionStart();
+            if (isConfirmPassVisible) {
+                // Ubah ke mode sembunyi password
+                etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                passConfirmIsShownBtn.setImageResource(R.drawable.eye_alt);
+                isConfirmPassVisible = !isConfirmPassVisible;
+            } else {
+                // Ubah ke mode tampilkan password
+                etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                passConfirmIsShownBtn.setImageResource(R.drawable.eye_closed);
+                isConfirmPassVisible = !isConfirmPassVisible;
+            }
+            // Untuk Font
+            etConfirmPassword.setTypeface(typeface);
+            etConfirmPassword.setSelection(selection);
         }
     }
 

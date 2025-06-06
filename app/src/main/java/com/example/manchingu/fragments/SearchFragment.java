@@ -95,14 +95,15 @@ public class SearchFragment extends Fragment
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                 progressBar.setVisibility(View.VISIBLE);
                 performSearch();
-                // Bersinggungan: Memanggil hideKeyboard dari Fragment
+                // Memanggil hideKeyboard dari Fragment
                 hideKeyboard(v);
                 return true;
             }
             return false;
         });
 
-        return view; // Mengembalikan root view dari fragment layout
+        // Mengembalikan root view dari fragment layout
+        return view;
     }
 
     // --- Method untuk Melakukan Pencarian API ---

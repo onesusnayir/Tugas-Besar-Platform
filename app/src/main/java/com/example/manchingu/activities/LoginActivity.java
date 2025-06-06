@@ -123,6 +123,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Validasi
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            submitBtn.setEnabled(true);
+            return;
+        }
+        if (password.length() < 8) {
+            Toast.makeText(this, "Password Harus 8 karakter", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            submitBtn.setEnabled(true);
             return;
         }
 

@@ -149,10 +149,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         // Validasi
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            submitBtn.setEnabled(true);
             return;
         }
         if (!(password.equals(confirmPassword))){
             Toast.makeText(this, "Confirm password berbeda", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            submitBtn.setEnabled(true);
+            return;
         }
 
         // Buat User baru untuk request

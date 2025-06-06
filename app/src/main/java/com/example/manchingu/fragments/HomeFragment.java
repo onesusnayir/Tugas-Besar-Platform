@@ -43,7 +43,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // Implementasikan View.OnClickListener, BannerPagerAdapter.OnComicClickListener, dan AllComicAdapter.OnComicClickListener
-// Hapus implementasi BottomNavigationView listener
+
 public class HomeFragment extends Fragment
         implements View.OnClickListener,
         BannerPagerAdapter.OnComicClickListener,
@@ -53,13 +53,14 @@ public class HomeFragment extends Fragment
     TextView tvUsername;
     Button seeComicsBtn;
     ImageView profileImage;
-    // BottomNavigationView bottomNav; // Hapus BottomNavigationView
 
     // --- Untuk Banner Carousel ---
     private ViewPager2 bannerViewPager;
     private BannerPagerAdapter bannerAdapter;
-    private Handler sliderHandler; // Inisialisasi di onViewCreated
-    private Runnable sliderRunnable; // Inisialisasi di onViewCreated
+    // Inisialisasi di onViewCreated
+    private Handler sliderHandler;
+    // Inisialisasi di onViewCreated
+    private Runnable sliderRunnable;
     private final long SLIDER_DELAY = 3000; // Delay dalam milidetik (3 detik) antar slide
     private String userEmail;
     private String userActualUsername;
@@ -81,39 +82,34 @@ public class HomeFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         // Cari Views di dalam 'view' yang diinflate
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // --- Inisialisasi Views ---
-        // Gunakan getContext() atau getActivity() untuk SharedPreferences
-        // Bersinggungan: Akses SharedPreferences dari Fragment menggunakan getContext()
+        // --- Inisialisasi ---
         prefs = getContext().getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE);
         String username = prefs.getString("username", "defaultName");
         tvUsername = view.findViewById(R.id.username);
         tvUsername.setText(username);
 
+        profileImage = view.findViewById(R.id.profile);
         seeComicsBtn = view.findViewById(R.id.see_all_btn);
-        seeComicsBtn.setOnClickListener(this); // Set listener klik untuk tombol Lihat Semua
-        profileImage = view.findViewById(R.id.profile); // Inisialisasi ImageView
-        profileImage.setOnClickListener(this); // Set listener klik untuk ImageView
 
-        // Hapus inisialisasi dan listener untuk bottomNav di sini
+        // Set listener klik untuk tombol Lihat Semua
+        seeComicsBtn.setOnClickListener(this);
+        profileImage.setOnClickListener(this);
 
         // --- Inisialisasi API Service ---
-        // Bersinggungan: Gunakan getContext() untuk ApiClient
         apiService = ApiClient.getApiService(getContext());
 
         // --- Setup Banner ViewPager2 ---
         bannerViewPager = view.findViewById(R.id.bannerViewPager);
-        // Bersinggungan: Gunakan getContext() sebagai context untuk adapter
+
         // Set listener untuk adapter banner ke Fragment ini
         bannerAdapter = new BannerPagerAdapter(this);
         bannerViewPager.setAdapter(bannerAdapter);
 
         // Setup Auto-Scrolling Banner Runnable (disederhanakan untuk infinite loop)
-        // Inisialisasi handler dan runnable di sini atau di onViewCreated
-        // Bersinggungan: Handler dan Runnable perlu diinisialisasi di lifecycle Fragment (onCreateView/onViewCreated)
+        // Inisialisasi handler dan runnable
         sliderHandler = new Handler(Looper.getMainLooper());
 
         sliderRunnable = new Runnable() {
@@ -134,11 +130,11 @@ public class HomeFragment extends Fragment
                 super.onPageScrollStateChanged(state);
                 if (sliderHandler != null) { // Tambahkan null check
                     if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
-                        // Bersinggungan: Menghentikan Handler pada interaksi user
+                        // Menghentikan Handler pada interaksi user
                         sliderHandler.removeCallbacks(sliderRunnable);
                     } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
                         if (bannerAdapter != null && bannerAdapter.getActualItemCount() > 1) {
-                            // Bersinggungan: Memulai kembali Handler
+                            // Memulai kembali Handler
                             sliderHandler.removeCallbacks(sliderRunnable);
                             sliderHandler.postDelayed(sliderRunnable, SLIDER_DELAY);
                         }
@@ -149,10 +145,8 @@ public class HomeFragment extends Fragment
 
         // --- Setup RecyclerView Rekomendasi ---
         rvRekomendasi = view.findViewById(R.id.rvRekomendasi);
-        // Bersinggungan: Gunakan getContext() sebagai context untuk adapter
         adapter = new AllComicAdapter(getContext(), fetchedComicItems, this); // Pass 'this' karena fragment mengimplement OnComicClickListener
 
-        // Bersinggungan: Gunakan getContext() untuk LayoutManager
         rvRekomendasi.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvRekomendasi.setAdapter(adapter);
 
@@ -163,13 +157,14 @@ public class HomeFragment extends Fragment
         progressBarBanner.setVisibility(View.VISIBLE);
 
         // --- Panggil API untuk mendapatkan data ---
-        fetchComicsData(); // Panggil method untuk fetch data dari API
+        // Panggil method untuk fetch data dari API
+        fetchComicsData();
         fetchProfileData();
-        return view; // Mengembalikan root view dari fragment layout
+        // Mengembalikan root view dari fragment layout
+        return view;
     }
 
-    // Pindahkan logika Handler start/stop ke lifecycle Fragment
-    // Bersinggungan: Mengelola Handler di onResume() dan onPause() Fragment
+    // Mengelola Handler di onResume() dan onPause() Fragment
     @Override
     public void onResume() {
         super.onResume();
@@ -193,12 +188,11 @@ public class HomeFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Pastikan runnable dihapus saat view dihancurkan untuk mencegah memory leaks
-        // Bersinggungan: Membersihkan Handler di onDestroyView() Fragment
+
+        // Membersihkan Handler di onDestroyView() Fragment
         if (sliderHandler != null && sliderRunnable != null) {
             sliderHandler.removeCallbacks(sliderRunnable);
         }
-        // Opsional: Null-kan view references untuk mencegah memory leaks (penting pada Fragment)
         tvUsername = null;
         seeComicsBtn = null;
         profileImage = null;
@@ -208,13 +202,12 @@ public class HomeFragment extends Fragment
         bannerAdapter = null;
         apiService = null;
         prefs = null;
-        // Tidak perlu menull-kan sliderHandler dan sliderRunnable karena sudah di-removeCallbacks
     }
 
 
-    // Method untuk memanggil API (Logika ini tetap sama, hanya konteksnya berubah)
+    // Method untuk memanggil API
     private void fetchComicsData() {
-        // Bersinggungan: Panggilan API sama, tetapi perlu null check pada apiService dan getContext()
+        // Check is null pada apiService dan getContext()
         if (apiService == null || getContext() == null) {
             Log.e("HomeFragment", "ApiService or Context is not initialized.");
             // Handle error, maybe show a message to the user
@@ -230,20 +223,16 @@ public class HomeFragment extends Fragment
 
             return;
         }
-        // TODO: Tampilkan loading indicator jika perlu
-        // showLoadingIndicator();
 
-        // Panggil API getLimitedComics sesuai kebutuhan Anda (page 1, limit 10 seperti kode awal)
+        // Panggil API getLimitedComics
         apiService.getLimitedComics(1, 10).enqueue(new Callback<ComicResponse>() {
             @Override
             public void onResponse(@NonNull Call<ComicResponse> call, @NonNull Response<ComicResponse> response) {
-                // Pastikan Fragment masih attached sebelum update UI
-                // Bersinggungan: Tambahkan isAdded() check sebelum mengakses context atau update UI
+                // Check Fragment masih attached dan isAdded() check
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
 
-                // TODO: Sembunyikan loading indicator
                 progressBarBanner.setVisibility(View.GONE);
                 progressBarComics.setVisibility(View.GONE);
 
@@ -255,12 +244,13 @@ public class HomeFragment extends Fragment
                         // Update data di list yang digunakan oleh adapter rekomendasi
                         fetchedComicItems.clear();
                         fetchedComicItems.addAll(items);
-                        if (adapter != null) adapter.notifyDataSetChanged(); // Bersinggungan: Pastikan adapter tidak null
+                        // Pastikan adapter tidak null
+                        if (adapter != null) adapter.notifyDataSetChanged();
                         else Log.w("HomeFragment", "Adapter Rekomendasi is null");
 
 
                         // Update data di adapter banner dengan data yang sama
-                        if (bannerAdapter != null) bannerAdapter.updateData(items); // Bersinggungan: Pastikan adapter tidak null
+                        if (bannerAdapter != null) bannerAdapter.updateData(items); // Pastikan adapter tidak null
                         else Log.w("HomeFragment", "Banner Adapter is null");
 
 
@@ -270,7 +260,7 @@ public class HomeFragment extends Fragment
                             int initialPosition = Integer.MAX_VALUE / 2;
                             initialPosition = initialPosition - (initialPosition % bannerAdapter.getActualItemCount());
 
-                            if (bannerViewPager != null) { // Bersinggungan: Pastikan ViewPager tidak null
+                            if (bannerViewPager != null) { // Pastikan ViewPager tidak null
                                 bannerViewPager.setCurrentItem(initialPosition, false);
 
                                 // Batalkan callback apa pun sebelum menjadwalkan
@@ -291,51 +281,46 @@ public class HomeFragment extends Fragment
 
                     } else {
                         // Handle jika list kosong tapi response sukses
-                        // Bersinggungan: Gunakan getContext() untuk Toast
                         Toast.makeText(getContext(), "Tidak ada data komik yang ditemukan.", Toast.LENGTH_SHORT).show();
                         // Kosongkan kedua adapter jika tidak ada data
                         fetchedComicItems.clear();
-                        if (adapter != null) adapter.notifyDataSetChanged(); // Bersinggungan: Pastikan adapter tidak null
-                        if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Bersinggungan: Pastikan adapter tidak null
+                        if (adapter != null) adapter.notifyDataSetChanged(); // Pastikan adapter tidak null
+                        if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Pastikan adapter tidak null
                         // Hentikan auto-scroll dan sembunyikan banner
                         if (sliderHandler != null && sliderRunnable != null) sliderHandler.removeCallbacks(sliderRunnable);
-                        if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Bersinggungan: Pastikan ViewPager tidak null
+                        if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Pastikan ViewPager tidak null
                     }
 
                 } else {
                     // Handle respon gagal (misalnya, status code 404, 500, dll.)
-                    // Bersinggungan: Gunakan getContext() untuk Toast
                     Toast.makeText(getContext(), "Gagal mendapatkan data: " + response.code(), Toast.LENGTH_SHORT).show();
                     // Kosongkan kedua adapter jika gagal
                     fetchedComicItems.clear();
-                    if (adapter != null) adapter.notifyDataSetChanged(); // Bersinggungan: Pastikan adapter tidak null
-                    if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Bersinggungan: Pastikan adapter tidak null
+                    if (adapter != null) adapter.notifyDataSetChanged(); // Pastikan adapter tidak null
+                    if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Pastikan adapter tidak null
                     // Hentikan auto-scroll dan sembunyikan banner
                     if (sliderHandler != null && sliderRunnable != null) sliderHandler.removeCallbacks(sliderRunnable);
-                    if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Bersinggungan: Pastikan ViewPager tidak null
+                    if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Pastikan ViewPager tidak null
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ComicResponse> call, @NonNull Throwable t) {
-                // Pastikan Fragment masih attached
-                // Bersinggungan: Tambahkan isAdded() check sebelum mengakses context atau update UI
+                // Check Fragment masih attached dan isAdded()
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
 
-                // TODO: Sembunyikan loading indicator
-                // hideLoadingIndicator();
-                // Bersinggungan: Gunakan getContext() untuk Toast
                 Toast.makeText(getContext(), "Error koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 t.printStackTrace(); // Log error untuk debugging
+
                 // Kosongkan kedua adapter jika error
                 fetchedComicItems.clear();
-                if (adapter != null) adapter.notifyDataSetChanged(); // Bersinggungan: Pastikan adapter tidak null
-                if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Bersinggungan: Pastikan adapter tidak null
+                if (adapter != null) adapter.notifyDataSetChanged(); // Pastikan adapter tidak null
+                if (bannerAdapter != null) bannerAdapter.updateData(new ArrayList<>()); // Pastikan adapter tidak null
                 // Hentikan auto-scroll dan sembunyikan banner
                 if (sliderHandler != null && sliderRunnable != null) sliderHandler.removeCallbacks(sliderRunnable);
-                if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Bersinggungan: Pastikan ViewPager tidak null
+                if (bannerViewPager != null) bannerViewPager.setVisibility(View.GONE); // Pastikan ViewPager tidak null
             }
         });
     }
@@ -347,11 +332,8 @@ public class HomeFragment extends Fragment
             if (getContext() != null) {
                 Toast.makeText(getContext(), "Aplikasi sedang memuat profil, coba lagi nanti.", Toast.LENGTH_SHORT).show();
             }
-            // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
             return;
         }
-
-        // if (progressBarProfile != null) progressBarProfile.setVisibility(View.VISIBLE); // <<< Tambahkan/Uncomment jika ada
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE); // Ganti "user_prefs" dengan nama shared preference yang benar
         String token = sharedPreferences.getString("token", null); // Ganti "auth_token" dengan key yang kamu gunakan
@@ -360,7 +342,6 @@ public class HomeFragment extends Fragment
         if (token == null) {
             Toast.makeText(getContext(), "Autentikasi diperlukan untuk profil. Silakan login kembali.", Toast.LENGTH_LONG).show();
             Log.e("HomeFragment", "Token not found for profile fetch.");
-            // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
             return;
         }
 
@@ -372,7 +353,6 @@ public class HomeFragment extends Fragment
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
-                // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
 
                 if (response.isSuccessful() && response.body() != null) {
                     ProfileResponse profileResponse = response.body();
@@ -403,7 +383,7 @@ public class HomeFragment extends Fragment
                 if (!isAdded() || getContext() == null) {
                     return;
                 }
-                // if (progressBarProfile != null) progressBarProfile.setVisibility(View.GONE); // <<< Tambahkan/Uncomment jika ada
+
                 Toast.makeText(getContext(), "Gagal terhubung untuk profil: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("HomeFragment", "Profile API Call Failure: " + t.getMessage(), t);
             }
@@ -412,17 +392,15 @@ public class HomeFragment extends Fragment
     // --- Implementasi View.OnClickListener (untuk tombol Lihat Semua) ---
     @Override
     public void onClick(View v) {
-        // Bersinggungan: Menggunakan getContext() untuk membuat Intent
+        // Intent Ke All Comic Activity
         if(v.getId() == R.id.see_all_btn && getContext() != null){
             Intent intent = new Intent(getContext(), AllComicsActivity.class);
             startActivity(intent);
-            // Hapus finish() karena ini Fragment, bukan Activity yang akan ditutup
-            // Optional: finish();
         }else if (v.getId() == R.id.profile && getContext() != null) {
             // Ketika tombol profil diklik, kirim data yang sudah di-fetch
             Intent intent = new Intent(getContext(), ProfileActivity.class);
-            intent.putExtra("username", userActualUsername); // <<< Modifikasi: Kirim data
-            intent.putExtra("email", userEmail);       // <<< Modifikasi: Kirim data
+            intent.putExtra("username", userActualUsername);
+            intent.putExtra("email", userEmail);
             startActivity(intent);
         }
     }
@@ -432,7 +410,7 @@ public class HomeFragment extends Fragment
     @Override
     public void onComicClick(ComicResponse.Item comic) {
         // Logika navigasi ke detail komik ketika item banner ATAU item rekomendasi diklik
-        // Bersinggungan: Menggunakan getContext() untuk membuat Intent
+        // Menggunakan getContext() untuk membuat Intent
         if (getContext() != null) {
             startActivity(createDetailIntent(comic)); // Gunakan method bantu untuk Intent
         } else {
@@ -465,8 +443,4 @@ public class HomeFragment extends Fragment
 
         return detailIntent;
     }
-
-    // TODO: Implementasikan metode untuk menampilkan/menyembunyikan loading indicator jika Anda punya UI-nya
-    // private void showLoadingIndicator() { ... }
-    // private void hideLoadingIndicator() { ... }
 }

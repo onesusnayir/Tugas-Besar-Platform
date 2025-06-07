@@ -8,5 +8,9 @@
 
     <style name="DropdownPopupBackground" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:popupBackground">@color/dark_blue</item> <!-- Ganti dengan warna yang kamu mau -->
+        <item name="colorControlActivated">@color/white</item> <!-- warna saat aktif -->
+    </style>
+    <style name="AppDropdownStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="colorControlActivated">@color/white</item> <!-- warna saat aktif -->
     </style>
 </resources>

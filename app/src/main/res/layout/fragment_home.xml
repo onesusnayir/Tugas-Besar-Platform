@@ -88,18 +88,13 @@
                 android:text="Comics"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
-            <Button
+            <TextView
                 android:id="@+id/see_all_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="0dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:paddingHorizontal="0dp"
-                android:paddingVertical="0dp"
-                android:background="@drawable/rounded"
-                app:backgroundTint="@color/light_blue"
                 android:text="Lihat semua"
                 android:textColor="@color/white"/>
         </androidx.constraintlayout.widget.ConstraintLayout>

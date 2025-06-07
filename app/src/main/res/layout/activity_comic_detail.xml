@@ -214,12 +214,13 @@
                 android:id="@+id/tvSynopsis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deskripsi komik akan tampil di sini."
-                android:textSize="14sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:justificationMode="inter_word"
                 android:gravity="start"
-                android:lineSpacingExtra="4dp"/>
+                android:lineSpacingExtra="4dp"
+                android:text="Deskripsi komik akan tampil di sini."
+                android:textSize="14sp" />
 
             <!-- Author Section -->
             <LinearLayout

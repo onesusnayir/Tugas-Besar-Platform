@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment
 
     SharedPreferences prefs;
     TextView tvUsername;
-    Button seeComicsBtn;
+    TextView seeComicsBtn;
     ImageView profileImage;
 
     // --- Untuk Banner Carousel ---

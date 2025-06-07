@@ -206,6 +206,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded"
                 app:backgroundTint="@color/backgroundBtn"
+                android:textColor="@color/white"
                 android:text="Add to Bookmark"/>
 
             <!-- Synopsis -->

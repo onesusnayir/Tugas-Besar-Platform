@@ -19,6 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Select Status"
+        android:textColorHint="@color/white"
+        app:hintTextColor="@color/white"
         style="@style/DropdownPopupBackground">
 
         <AutoCompleteTextView
@@ -28,6 +30,7 @@
             android:inputType="none"
             android:background="@color/background"
             android:textColor="@color/white"
+            android:textColorHint="@color/white"
             android:popupBackground="@color/dark_blue"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,6 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save"
+            android:textColor="@color/white"
             app:backgroundTint="@color/backgroundBtn"
             android:background="@drawable/rounded"
             android:layout_marginBottom="10dp"/>
@@ -51,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Cancel"
+            android:textColor="@color/white"
             app:backgroundTint="@color/dark_blue"
             android:background="@drawable/rounded"
             />

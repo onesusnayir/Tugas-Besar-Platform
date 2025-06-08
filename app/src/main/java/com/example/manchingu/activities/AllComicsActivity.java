@@ -69,6 +69,17 @@ public class AllComicsActivity extends AppCompatActivity implements View.OnClick
             intent.putExtra("synopsis", comic.getSynopsis());
             intent.putExtra("id_comic", comic.getId_comic());
             intent.putExtra("artist", comic.getArtist());
+            intent.putExtra("status",comic.getStatus());
+            intent.putExtra("bookmarked",comic.getBookmarked());
+
+
+            // Pastikan comic.getGenre() tidak null sebelum dimasukkan ke ArrayListExtra
+            if (comic.getGenre() != null) {
+                intent.putStringArrayListExtra("genre", new ArrayList<>(comic.getGenre()));
+            } else {
+                intent.putStringArrayListExtra("genre", new ArrayList<>()); // Kirim list kosong jika null
+            }
+
             startActivity(intent);
         });
         rvComics.setAdapter(adapter);

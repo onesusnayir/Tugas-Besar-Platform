@@ -62,7 +62,7 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/bannerViewPager"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="200dp"
                 android:layout_marginBottom="20dp"/>
             <ProgressBar
                 android:id="@+id/progressBarBanner"
@@ -77,7 +77,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
                 android:id="@+id/rekomendasiLabel"
                 android:layout_width="wrap_content"
@@ -86,7 +87,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="Comics"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold"/>
             <TextView
                 android:id="@+id/see_all_btn"

@@ -37,8 +37,8 @@
             android:text="Email"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded"
             android:gravity="center_vertical">
@@ -47,17 +47,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:src="@drawable/email"/>
+
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="15dp"
+                android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center_vertical"
                 android:hint="Username@gmail.com"
+                android:imeOptions="actionNext"
+                android:padding="15dp"
                 android:textColor="@color/white"
-                android:textColorHint="#80FFFFFF"
-                android:imeOptions="actionNext"/>
+                android:textColorHint="#80FFFFFF" />
         </LinearLayout>
 
         <TextView
@@ -66,8 +67,8 @@
             android:text="Username"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded"
             android:gravity="center_vertical">
@@ -106,8 +107,8 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded"
             android:gravity="center_vertical">
@@ -144,7 +145,7 @@
             android:text="Confirm Password"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded"

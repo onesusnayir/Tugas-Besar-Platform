@@ -6,31 +6,31 @@
     android:background="@drawable/rounded"
     android:clipToOutline="true"> <!-- PENTING: Menggunting konten sesuai bentuk background -->
 
-<ImageView
-android:id="@+id/bannerItemImage"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:scaleType="centerCrop"
-tools:src="@drawable/banner_nano_machine"/>
-<View
-android:id="@+id/bannerItemOverlay"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_gravity="center"
-android:background="@drawable/gradient_overlay" />
+    <ImageView
+    android:id="@+id/bannerItemImage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop"
+    tools:src="@drawable/banner_nano_machine"/>
+    <View
+    android:id="@+id/bannerItemOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/gradient_overlay" />
 
-<TextView
-android:id="@+id/bannerItemTitle"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-tools:text="Judul Komik"
-android:textColor="#FFFFFF"
-android:textSize="24sp"
-android:textStyle="bold"
-android:layout_gravity="bottom|start"
-android:layout_margin="16dp"
-android:shadowColor="#80000000"
-android:shadowDx="0"
-android:shadowDy="2"
-android:shadowRadius="4"/>
-    </FrameLayout>
+    <TextView
+    android:id="@+id/bannerItemTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:text="Judul Komik"
+    android:textColor="#FFFFFF"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    android:layout_gravity="bottom|start"
+    android:layout_margin="16dp"
+    android:shadowColor="#80000000"
+    android:shadowDx="0"
+    android:shadowDy="2"
+    android:shadowRadius="4"/>
+</FrameLayout>

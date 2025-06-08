@@ -21,19 +21,20 @@
         android:background="@color/dark_blue">
         <TextView
             android:id="@+id/reading_btn"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reading"
             android:gravity="center"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:padding="5dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="10dp"
             app:layout_constraintEnd_toStartOf="@id/completed_btn" />
 
         <TextView
             android:id="@+id/completed_btn"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Completed"
             android:gravity="center"
@@ -41,12 +42,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/reading_btn"
             app:layout_constraintEnd_toStartOf="@id/plan_to_read_btn"
-            android:padding="5dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="10dp"
             />
 
         <TextView
             android:id="@+id/plan_to_read_btn"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Plan to Read"
             android:gravity="center"
@@ -54,12 +56,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/completed_btn"
             app:layout_constraintEnd_toStartOf="@id/dropped_btn"
-            android:padding="5dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="10dp"
             />
 
         <TextView
             android:id="@+id/dropped_btn"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dropped"
             android:gravity="center"
@@ -67,7 +70,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/plan_to_read_btn"
             app:layout_constraintEnd_toEndOf="parent"
-            android:padding="5dp"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="10dp"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -90,10 +94,12 @@
         android:id="@+id/rvBookmark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/navbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp"
+        tools:listitem="@layout/item_comic_grid"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

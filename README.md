@@ -31,13 +31,3 @@ You can download **ManChingu** here:
 * Bookmark manhwa for easier access
 * Manage your personal reading list
 * Simple and user-friendly interface
-
----
-
-## 📌 Notes
-
-If you would like to contribute or further develop the backend, feel free to check out the repository and API documentation linked above.
-
----
-
-If you'd like, I can help you add screenshots, badges, or installation instructions too. Let me know! 🚀
